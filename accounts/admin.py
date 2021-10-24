@@ -8,3 +8,6 @@ class UserAdmin(admin.ModelAdmin):
                     'date_joined']
     list_editable = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser']
     list_filter = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser']
+
+
+admin.site.unregister(Group)
