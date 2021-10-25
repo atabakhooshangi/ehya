@@ -1,7 +1,8 @@
 # Internal imports
 from .models import Ticket
-from .serializers import TicketSerializer, AnswerSerializer
+from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer
 from .permissions import is_owner, IsOwner
+from accounts.renderers import Renderer, SimpleRenderer
 
 # Django imports
 from django.utils.translation import ugettext as _
@@ -19,8 +20,9 @@ User = get_user_model()
 
 
 class TicketAPIView(CreateAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = TicketCreateSerializer
     permission_classes = [IsAuthenticated]
+    renderer_classes = [SimpleRenderer]
     parser_classes = (MultiPartParser, FormParser)
 
     def perform_create(self, serializer):
@@ -32,6 +34,7 @@ class TicketAPIView(CreateAPIView):
 
 class AnswerAPIView(generics.GenericAPIView):
     serializer_class = AnswerSerializer
+    renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -50,7 +53,8 @@ class AnswerAPIView(generics.GenericAPIView):
 
 
 class TicketGetAPIView(generics.ListAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = TicketGetSerializer
+    renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -58,7 +62,8 @@ class TicketGetAPIView(generics.ListAPIView):
 
 
 class RetrieveATicketAPIView(generics.RetrieveAPIView):
-    serializer_class = TicketSerializer
+    serializer_class = TicketGetSerializer
+    renderer_classes = [Renderer]
     permission_classes = [IsOwner]
     lookup_field = 'id'
 

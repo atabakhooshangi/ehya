@@ -30,7 +30,27 @@ class AnswerGetSerializer(serializers.ModelSerializer):
         fields = ['user', 'text', 'seen_user', 'seen_admin', 'created_at']
 
 
-class TicketSerializer(serializers.ModelSerializer):
+class TicketCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = [
+            'topic',
+            'section',
+            'request_text',
+            'file',
+            'status',
+            'created_at',
+        ]
+
+    def save(self, **kwargs):
+        ticket = Ticket.objects.create(user=kwargs['user'], topic=self.validated_data.get('topic'),
+                                       section=self.validated_data.get('section'),
+                                       request_text=self.validated_data.get('request_text'),
+                                       file=self.validated_data.get('file'), )
+        return ticket
+
+
+class TicketGetSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -47,10 +67,3 @@ class TicketSerializer(serializers.ModelSerializer):
 
     def get_answers(self, obj):
         return AnswerGetSerializer(obj.answer_set.all(), many=True).data
-
-    def save(self, **kwargs):
-        ticket = Ticket.objects.create(user=kwargs['user'], topic=self.validated_data.get('topic'),
-                                       section=self.validated_data.get('section'),
-                                       request_text=self.validated_data.get('request_text'),
-                                       file=self.validated_data.get('file'), )
-        return ticket

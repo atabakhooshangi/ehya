@@ -10,12 +10,14 @@ from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED, HTTP_2
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from accounts.renderers import Renderer
 
 User = get_user_model()
 
 
 class GetInformsAPIView(generics.ListAPIView):
     serializer_class = InformSerializer
+    renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
