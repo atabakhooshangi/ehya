@@ -39,7 +39,7 @@ class AnswerAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         data = self.request.data
-        ticket = Ticket.objects.get(id=data['ticket'])
+        ticket = get_object_or_404(Ticket, id=data['ticket'])
         serializer = self.serializer_class(data=data)
         if is_owner(obj=ticket, request_user=self.request.user):
             serializer.is_valid()
