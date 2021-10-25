@@ -1,5 +1,7 @@
 import json
 from django.utils.translation import ugettext as _
+
+from .renderers import Renderer
 from .serializers import RegisterLoginSerializer, VerificationCodeSerializer, UserSerializer, ReferralSerializer
 import requests
 from random import randint
@@ -16,6 +18,7 @@ User = get_user_model()
 
 class RegisterLoginAPIView(generics.GenericAPIView):
     serializer_class = RegisterLoginSerializer
+    renderer_classes = [Renderer]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -49,23 +52,24 @@ class RegisterLoginAPIView(generics.GenericAPIView):
                   'msg': f'{message}'}
 
         response = requests.post(url, data=json.dumps(params))
-        return Response('کاربر با موفقیت ساخته شد', status=HTTP_201_CREATED)
+        return Response(status=HTTP_201_CREATED)
 
 
 class VerifyAuthenticationCodeAPIView(generics.GenericAPIView):
     serializer_class = VerificationCodeSerializer
+    renderer_classes = [Renderer]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         data = request.data
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
-
         return Response(serializer.validated_data, status=HTTP_200_OK)
 
 
 class UserProfileAPIView(generics.GenericAPIView):
     serializer_class = UserSerializer
+    renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -84,6 +88,7 @@ class UserProfileAPIView(generics.GenericAPIView):
 
 class ReferralAPIView(generics.GenericAPIView):
     serializer_class = ReferralSerializer
+    renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -101,4 +106,4 @@ class ReferralAPIView(generics.GenericAPIView):
         ref_user.user_referrals.add(user)
         ref_user.points += 10
         ref_user.save()
-        return Response('با موفقیت ثبت شد.', status=HTTP_200_OK)
+        return Response(status=HTTP_200_OK)
