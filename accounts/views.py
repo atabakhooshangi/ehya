@@ -1,6 +1,5 @@
 import json
 from django.utils.translation import ugettext as _
-
 from .renderers import Renderer
 from .serializers import RegisterLoginSerializer, VerificationCodeSerializer, UserSerializer, ReferralSerializer
 import requests

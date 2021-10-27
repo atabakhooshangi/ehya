@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/auth/', include('accounts.urls', namespace='Accounts')),
     path('api/ticket/', include('ticket.urls', namespace='Tickets')),
     path('api/informs/', include('informs.urls', namespace='Informs')),
+    path('api/treasure/', include('treasure.urls', namespace='Treasure')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

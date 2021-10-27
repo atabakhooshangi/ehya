@@ -37,7 +37,7 @@ class VerificationCodeSerializer(serializers.Serializer):
         if user.verify_code == attrs.get('code'):
             if not user.is_active: user.is_active = True
             # user.verify_code = None
-            # user.save()
+            user.save()
             return user.tokens
         raise serializers.ValidationError({'code': _('کد وارد شده اشتباه است.')})
 
