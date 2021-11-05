@@ -29,7 +29,7 @@ class SimpleRenderer(renderers.JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
 
         if 'ErrorDetail' in str(data):
-            response = json.dumps({'isDone': False})
+            response = json.dumps({'isDone': False}, cls=UUIDEncoder)
         else:
-            response = json.dumps({'isDone': True})
+            response = json.dumps({'isDone': True}, cls=UUIDEncoder)
         return response

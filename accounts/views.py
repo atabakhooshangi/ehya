@@ -1,7 +1,8 @@
 import json
 from django.utils.translation import ugettext as _
 from .renderers import Renderer
-from .serializers import RegisterLoginSerializer, VerificationCodeSerializer, UserSerializer, ReferralSerializer
+from .serializers import RegisterLoginSerializer, VerificationCodeSerializer, UserSerializer, ReferralSerializer, \
+    RoleSerializer
 import requests
 from random import randint
 from django.contrib.auth import get_user_model
@@ -11,6 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.response import Response
 from .utils import get_visitor_ipaddress
+from .models import ProfileCompletionPoints, Role
 
 User = get_user_model()
 
@@ -43,6 +45,7 @@ class RegisterLoginAPIView(generics.GenericAPIView):
         user = User.objects.create_user(phone_number=phone_number, password=None)
         user.ip = ip
         user.verify_code = code
+        user.role = Role.objects.filter(name='عضو عادی')
         user.save()
         message = f'   کد احراز هویت شما : {code}'
         url = 'http://185.4.28.100/class/sms/restful/sendSms_OneToMany.php'
@@ -81,7 +84,11 @@ class UserProfileAPIView(generics.GenericAPIView):
     def patch(self, request, *args, **kwargs):
         serializer = self.serializer_class(self.get_object(), data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        instance = serializer.save()
+        if instance.profile_done and instance.profile_completion_point == '2':
+            instance.points += ProfileCompletionPoints.objects.last().value
+            instance.profile_completion_point = '1'
+            instance.save()
         return Response(serializer.data)
 
 
@@ -106,3 +113,9 @@ class ReferralAPIView(generics.GenericAPIView):
         ref_user.points += 10
         ref_user.save()
         return Response(status=HTTP_200_OK)
+
+
+class GetRolesAPIView(generics.ListAPIView):
+    serializer_class = RoleSerializer
+    permission_classes = [AllowAny]
+    queryset = Role.objects.all()

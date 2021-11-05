@@ -22,6 +22,8 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('jet/', include('jet.urls', namespace='jet')),
+    # path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/auth/', include('accounts.urls', namespace='Accounts')),
     path('api/ticket/', include('ticket.urls', namespace='Tickets')),

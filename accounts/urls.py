@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import RegisterLoginAPIView , VerifyAuthenticationCodeAPIView,UserProfileAPIView,ReferralAPIView
+from .views import RegisterLoginAPIView, VerifyAuthenticationCodeAPIView, UserProfileAPIView, ReferralAPIView, \
+    GetRolesAPIView
 
 app_name = 'Accounts'
 
@@ -8,5 +9,6 @@ urlpatterns = [
     path('verify_code', VerifyAuthenticationCodeAPIView.as_view(), name='Verify-Code'),
     path('user_profile', UserProfileAPIView.as_view(), name='User Profile'),
     path('referral', ReferralAPIView.as_view(), name='Referral'),
+    path('roles', GetRolesAPIView.as_view(), name='Roles'),
 
 ]

@@ -1,0 +1,1 @@
+celery -A ehyasalamat worker --pool=gevent --loglevel=DEBUG

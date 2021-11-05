@@ -1,15 +1,20 @@
 import uuid
-
+from .user_manager import UserManager
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import ugettext as _
-
+from ticket.models import TicketPointCost
 from rest_framework import exceptions
 from rest_framework_simplejwt.tokens import RefreshToken
 
 GENDER_CHOICES = (
     ('مرد', 'مرد'),
     ('زن', 'زن'),
+)
+
+PROFILE_POINT_CHOICES = (
+    ('1', 'کسب شده'),
+    ('2', 'کسب نشده'),
 )
 
 ROLE_CHOICES = (
@@ -29,36 +34,25 @@ ROLE_CHOICES = (
 )
 
 
-class UserManager(BaseUserManager):
+class Role(models.Model):
+    name = models.CharField(_('نام نقش'), max_length=50, null=False, blank=False)
 
-    def create_user(self, phone_number, password=None):
-        if not phone_number:
-            raise exceptions.ValidationError({'Phone Number': [_('Phone Number is Required.')]})
+    class Meta:
+        verbose_name = _('نقش کاربر')
+        verbose_name_plural = _('نقش های کاربری')
+        ordering = ('name',)
 
-        user = self.model(
-            phone_number=phone_number
-        )
+    def __str__(self):
+        return self.name
 
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
 
-    def create_superuser(self, phone_number, password=None):
-        if not password:
-            raise exceptions.ValidationError({'Password': [_('Password is Required.')]})
+class ProfileCompletionPoints(models.Model):
+    value = models.PositiveIntegerField(default=0, verbose_name=_('مقدار'), null=False, blank=False, help_text=_(
+        'بعد از تکمیل پروفایل این مقدار امتیاز به کاربر توسط کاربر کسب میشود'))
 
-        admin = self.create_user(
-            phone_number=phone_number
-        )
-
-        admin.set_password(password)
-
-        admin.is_active = True
-        admin.is_staff = True
-        admin.is_superuser = True
-        admin.is_admin = True
-        admin.save(using=self._db)
-        return admin
+    class Meta:
+        verbose_name = _('امتیاز اولبه')
+        verbose_name_plural = _('امتیاز اولبه')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -66,7 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_('ایمیل'), max_length=65, unique=True, blank=True, null=True)
     phone_number = models.CharField(verbose_name=_('شماره تلفن همراه'), max_length=20, blank=False, null=False,
                                     unique=True)
-    role = models.CharField(verbose_name=_('نوع عضویت'), max_length=20, choices=ROLE_CHOICES, default=1)
+    role = models.ForeignKey('Role', on_delete=models.DO_NOTHING, verbose_name=_('نقش کاربر'), null=True, blank=True)
     first_name = models.CharField(verbose_name=_('نام'), max_length=75, null=True, blank=True)
     last_name = models.CharField(verbose_name=_('نام خانوادگی'), max_length=75, null=True, blank=True)
     province = models.CharField(verbose_name=_('استان'), max_length=40, null=True, blank=True)
@@ -80,6 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                                  on_delete=models.CASCADE)
     user_referrals = models.ManyToManyField('User', verbose_name=_('معرفی کرده'), related_name='urefs', blank=True)
     points = models.IntegerField(verbose_name=_('امتیاز'), default=0)
+    profile_completion_point = models.CharField(_('امتیاز تکمیل پروفایل'), max_length=1, choices=PROFILE_POINT_CHOICES,
+                                                default='2')
     ip = models.CharField(verbose_name=_('آدرس آی پی'), max_length=15, blank=True, null=True)
     verify_code = models.IntegerField(verbose_name=_('کد احراز'), default=0, null=True, blank=True)
     last_login = models.DateTimeField(verbose_name=_('آخرین بازدید'), auto_now=True)
@@ -98,6 +94,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.phone_number
 
     @property
+    def profile_done(self):
+        fields = ['first_name', 'last_name', 'province', 'city', 'birthday', 'gender', 'degree', 'field_of_study',
+                  'job']
+        for field_name in fields:
+            if getattr(self, field_name) is None:
+                return False
+        return True
+
+    @property
     def tokens(self):
         token = RefreshToken.for_user(self)
         data = {
@@ -105,6 +110,12 @@ class User(AbstractBaseUser, PermissionsMixin):
             'access': str(token.access_token)
         }
         return data
+
+    @property
+    def check_point_status_for_ticket(self):
+        if self.points >= TicketPointCost.objects.last().value:
+            return True
+        return False
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

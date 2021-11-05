@@ -3,6 +3,8 @@ from rest_framework import serializers
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
 
+from accounts.models import Role
+
 User = get_user_model()
 
 
@@ -28,6 +30,12 @@ class RegisterLoginSerializer(serializers.Serializer):
     #     return user
 
 
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name']
+
+
 class VerificationCodeSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=11)
     code = serializers.IntegerField(max_value=9999)
@@ -44,14 +52,22 @@ class VerificationCodeSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
+    profile_done = serializers.SerializerMethodField(read_only=True)
+    has_points = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = ['phone_number', 'role', 'first_name', 'last_name', 'province', 'city', 'birthday', 'gender', 'degree',
-                  'field_of_study', 'job', 'points']
+                  'field_of_study', 'job', 'points', 'profile_done', 'has_points']
 
     def get_role(self, obj):
-        return obj.get_role_display()
+        return obj.role.name
+
+    def get_profile_done(self, obj):
+        return obj.profile_done
+
+    def get_has_points(self, obj):
+        return obj.check_point_status_for_ticket
 
 
 class ReferralSerializer(serializers.Serializer):

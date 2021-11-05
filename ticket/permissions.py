@@ -14,8 +14,17 @@ class IsOwner(permissions.BasePermission):
         return obj.user == request.user
 
 
-def is_owner(obj, request_user):
+class IsExpert(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_authenticated)
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.role in ['3', '4']
+
+
+def is_expert(request_user):
     """
     Allows access only to owner users.
     """
-    return obj.user == request_user
+    return request_user.role.name in ['کارشناس', 'کارشناس ارشد']
