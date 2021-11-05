@@ -58,7 +58,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
         ]
 
     def get_section(self, obj):
-        section = get_object_or_404(Section, id=obj['section_id'])
+        section = get_object_or_404(Section, id=int(obj['section_id']))
         return section.name
 
     def validate(self, attrs):
@@ -73,9 +73,9 @@ class TicketCreateSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError({'points': _('شما دارای امتیاز کافی جهت طرح پرسش را نمی باشید')})
 
     def save(self, **kwargs):
-        # section = get_object_or_404(Section, name=self.validated_data.get('section'))
+        section = get_object_or_404(Section, id=int(self.validated_data.get('section')))
         ticket = Ticket.objects.create(user=kwargs['user'], topic=self.validated_data.get('topic'),
-                                       section_id=self.validated_data.get('section_id'),
+                                       section=section,
                                        request_text=self.validated_data.get('request_text'),
                                        file=self.validated_data.get('file'))
         return ticket
