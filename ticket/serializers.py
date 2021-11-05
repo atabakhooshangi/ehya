@@ -3,10 +3,12 @@ from django.contrib.auth.views import get_user_model
 from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
 from .models import Ticket, Answer, TicketPointCost, Section
+from .permissions import is_expert
 
 User = get_user_model()
 
@@ -23,6 +25,9 @@ class AnswerSerializer(serializers.ModelSerializer):
             Ticket.objects.get(id=int(attrs.get('ticket')))
         except:
             raise serializers.ValidationError({'ticket': _('تیکت وارد شده وجود ندارد')})
+        else:
+            if not is_expert(self.context.get('request').user):
+                raise PermissionDenied({'user': _('اجازه این عملیات را ندارید')})
         return attrs
 
     def save(self, **kwargs):
@@ -67,17 +72,19 @@ class TicketCreateSerializer(serializers.ModelSerializer):
         if request and hasattr(request, "user"):
             user = request.user
         if user.check_point_status_for_ticket:
-            user.points -= TicketPointCost.objects.last().value
-            user.save()
             return attrs
-        raise serializers.ValidationError({'points': _('شما دارای امتیاز کافی جهت طرح پرسش را نمی باشید')})
+        raise serializers.ValidationError({'points': _('شما دارای امتیاز کافی جهت طرح پرسش  نمی باشید')})
 
     def save(self, **kwargs):
+        user = kwargs['user']
         section = get_object_or_404(Section, id=int(self.validated_data.get('section_id')))
-        ticket = Ticket.objects.create(user=kwargs['user'], topic=self.validated_data.get('topic'),
+        ticket = Ticket.objects.create(user=user, topic=self.validated_data.get('topic'),
                                        section=section,
                                        request_text=self.validated_data.get('request_text'),
                                        file=self.validated_data.get('file'))
+        if user.check_point_status_for_ticket:
+            user.points -= TicketPointCost.objects.last().value
+            user.save()
         return ticket
 
 

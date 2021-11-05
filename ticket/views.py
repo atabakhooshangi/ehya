@@ -22,7 +22,7 @@ User = get_user_model()
 class TicketAPIView(CreateAPIView):
     serializer_class = TicketCreateSerializer
     permission_classes = [IsAuthenticated]
-    renderer_classes = [SimpleRenderer]
+    renderer_classes = [Renderer]
     parser_classes = (MultiPartParser, FormParser)
 
     def perform_create(self, serializer):
@@ -40,12 +40,11 @@ class AnswerAPIView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         data = self.request.data
-        serializer = self.serializer_class(data=data)
-        if is_expert(self.request.user):
-            serializer.is_valid(raise_exception=True)
-            serializer.save(user=self.request.user, ticket_id=data['ticket'], text=data['text'], file=data['file'])
-            return Response(status=HTTP_201_CREATED)
-        return Response({'user': _('اجازه این عملیات را ندارید')}, HTTP_403_FORBIDDEN)
+        serializer = self.serializer_class(data=data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user, ticket_id=data['ticket'], text=data['text'], file=data['file'])
+        return Response(status=HTTP_201_CREATED)
+
 
 
 class GetUserTicketsAPIView(generics.ListAPIView):
