@@ -73,7 +73,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError({'points': _('شما دارای امتیاز کافی جهت طرح پرسش را نمی باشید')})
 
     def save(self, **kwargs):
-        section = get_object_or_404(Section, id=int(self.validated_data.get('section')))
+        section = get_object_or_404(Section, id=int(self.validated_data.get('section_id')))
         ticket = Ticket.objects.create(user=kwargs['user'], topic=self.validated_data.get('topic'),
                                        section=section,
                                        request_text=self.validated_data.get('request_text'),
