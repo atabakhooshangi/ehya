@@ -45,7 +45,7 @@ class RegisterLoginAPIView(generics.GenericAPIView):
         user = User.objects.create_user(phone_number=phone_number, password=None)
         user.ip = ip
         user.verify_code = code
-        user.role = Role.objects.filter(name='عضو عادی')
+        user.role = Role.objects.filter(name='عضو عادی').last()
         user.save()
         message = f'   کد احراز هویت شما : {code}'
         url = 'http://185.4.28.100/class/sms/restful/sendSms_OneToMany.php'
