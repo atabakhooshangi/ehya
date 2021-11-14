@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'ticket.apps.TicketConfig',
     'informs.apps.InformsConfig',
     'sms.apps.SmsConfig',
+    'support.apps.SupportConfig',
     'jalali_date',
     # swagger
     'drf_yasg',
@@ -52,7 +53,6 @@ INSTALLED_APPS = [
 
     # cors
     'corsheaders',
-    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -126,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 #     ('fa', 'Farsi'),
 # )
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fa-ir'
 
 TIME_ZONE = 'Asia/Tehran'
 

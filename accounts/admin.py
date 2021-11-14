@@ -25,6 +25,30 @@ class UserAdmin(admin.ModelAdmin):
 
     actions = ['select_users_for_sms']
 
+    fieldsets = [
+        ('اطلاعات تماس', {
+            'fields': (
+                'phone_number', 'email')}),
+        ('مشخصات فردی', {
+            'fields': (
+                'first_name', 'last_name', 'province', 'city', 'birthday', 'gender', 'degree',
+                'field_of_study',
+                'job')}),
+        ('بخش معرفی', {
+            'fields': ('referral', 'user_referrals')
+        }),
+        ('بخش امتیاز', {
+            'fields': ('points', 'profile_completion_point')
+        }),
+        ('بخش سطح کاربری', {
+            'fields': ('user_permissions', 'is_admin', 'is_staff', 'is_superuser', 'is_active', 'role')
+        }),
+        ('اطلاعات بیشتر', {
+            'fields': ('ip', 'verify_code')
+        }),
+
+    ]
+
     def get_created_jalali(self, obj):
         return datetime2jalali(obj.date_joined).strftime('%y/%m/%d _ %H:%M:%S')
 
@@ -42,6 +66,10 @@ class UserAdmin(admin.ModelAdmin):
             'domain': current_domain
         }
         return render(request, 'admin/select_users.html', context)
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_staff:
+            return True
 
     select_users_for_sms.short_description = _('انتخاب کاربران جهت ارسال پیامک')
 

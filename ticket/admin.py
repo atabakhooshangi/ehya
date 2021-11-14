@@ -8,7 +8,20 @@ from django.utils.html import format_html
 
 class AnswerInLine(admin.TabularInline):
     model = models.Answer
-    extra = 1
+    extra = 0
+    autocomplete_fields = ['user']
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_add_permission(self, request, obj):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
 
 
 @admin.register(models.Ticket)
@@ -30,6 +43,23 @@ class TicketAdmin(admin.ModelAdmin):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
     get_created_jalali.short_description = 'تاریخ ایجاد'
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_add_permission(self, request):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_admin:
+            return True
+
     inlines = [AnswerInLine]
 
 
@@ -37,11 +67,30 @@ class TicketAdmin(admin.ModelAdmin):
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ['user', 'ticket', 'get_created_jalali']
     list_filter = [('created_at', DateRangeFilter)]
+    autocomplete_fields = ['user']
+    search_fields = ['user__phone_number']
+    raw_id_fields = ['user']
 
     def get_created_jalali(self, obj):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
     get_created_jalali.short_description = 'تاریخ ایجاد'
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_add_permission(self, request):
+        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_admin:
+            return True
 
 
 @admin.register(models.TicketPointCost)
@@ -54,3 +103,9 @@ class TicketPointCostAdmin(admin.ModelAdmin):
 class TicketPointCostAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
     list_editable = ['name']
+
+
+@admin.register(models.TicketAnswerLimit)
+class TicketAnswerLimitAdmin(admin.ModelAdmin):
+    list_display = ['id', 'value']
+    list_editable = ['value']

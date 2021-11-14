@@ -7,7 +7,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
-from .models import Ticket, Answer, TicketPointCost, Section
+from .models import Ticket, Answer, TicketPointCost, Section , TicketAnswerLimit
 from .permissions import is_expert
 
 User = get_user_model()
@@ -25,9 +25,10 @@ class AnswerSerializer(serializers.ModelSerializer):
             Ticket.objects.get(id=int(attrs.get('ticket')))
         except:
             raise serializers.ValidationError({'ticket': _('تیکت وارد شده وجود ندارد')})
-        else:
-            if not is_expert(self.context.get('request').user):
-                raise PermissionDenied({'user': _('اجازه این عملیات را ندارید')})
+        # else:
+        #     if not is_expert(self.context.get('request').user):
+        #         raise PermissionDenied({'user': _('اجازه این عملیات را ندارید')})
+
         return attrs
 
     def save(self, **kwargs):
@@ -53,6 +54,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = [
+            'id',
             'topic',
             'section',
             'section_id',
@@ -94,6 +96,7 @@ class TicketGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = [
+            'id',
             'topic',
             'section',
             'request_text',

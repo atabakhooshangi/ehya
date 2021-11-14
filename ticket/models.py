@@ -11,8 +11,8 @@ STATUS_CHOICES = (
 
 def upload_location(instance, filename):
     extension = filename.split('.')[-1]
-    tikcet_id = Ticket.objects.last().id + 1
-    return f'uploads/tickets/ticket{tikcet_id}.{extension}'
+    ticket_id = Ticket.objects.last().id + 1
+    return f'uploads/tickets/ticket{ticket_id}.{extension}'
 
 
 def answer_upload_location(instance, filename):
@@ -22,6 +22,15 @@ def answer_upload_location(instance, filename):
     return f'uploads/tickets/ticket{tikcet_id}_answer{answer_id}.{extension}'
 
 
+class TicketAnswerLimit(models.Model):
+    value = models.PositiveIntegerField(_('مقدار'), default=3, help_text=_(
+        'مقدار وارد شده تعیین میکند که کاربر حداکثر تا چند پاسخ در بدنه پرسش خود میتواند مطرح کند.'))
+
+    class Meta:
+        verbose_name = _('محدودیت تعداد پاسخ')
+        verbose_name_plural = _('محدودیت تعداد پاسخ')
+
+
 class Section(models.Model):
     name = models.CharField(_('نام بخش'), max_length=100, null=False, blank=False)
 
@@ -29,6 +38,9 @@ class Section(models.Model):
         verbose_name = _('بخش سلامت')
         verbose_name_plural = _('بخش های سلامت')
         ordering = ('name',)
+
+    def __str__(self):
+        return self.name
 
 
 class Ticket(models.Model):
@@ -46,6 +58,9 @@ class Ticket(models.Model):
         verbose_name = _('تیکت')
         verbose_name_plural = _('تیکت ها')
         ordering = ('created_at',)
+
+    def __str__(self):
+        return self.user.phone_number
 
 
 class Answer(models.Model):

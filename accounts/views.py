@@ -119,3 +119,4 @@ class GetRolesAPIView(generics.ListAPIView):
     serializer_class = RoleSerializer
     permission_classes = [AllowAny]
     queryset = Role.objects.all()
+

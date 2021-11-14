@@ -24,4 +24,12 @@ class SendSmsAdmin(admin.ModelAdmin):
     def recep(self, obj):
         return obj.recipients.count()
 
+    def has_add_permission(self, request):
+        if request.user.is_staff:
+            return True
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_staff:
+            return True
+
     recep.short_description = 'تعداد گیرندگان'
