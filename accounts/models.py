@@ -60,7 +60,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_('ایمیل'), max_length=65, unique=True, blank=True, null=True)
     phone_number = models.CharField(verbose_name=_('شماره تلفن همراه'), max_length=20, blank=False, null=False,
                                     unique=True)
-    username = models.CharField(_('نام کاربری'), max_length=100, null=True, blank=True, unique=True)
     role = models.ForeignKey('Role', on_delete=models.DO_NOTHING, verbose_name=_('نقش کاربر'), null=True, blank=True)
     first_name = models.CharField(verbose_name=_('نام'), max_length=75, null=True, blank=True)
     last_name = models.CharField(verbose_name=_('نام خانوادگی'), max_length=75, null=True, blank=True)
