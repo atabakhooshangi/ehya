@@ -9,7 +9,7 @@ from jalali_date.admin import ModelAdminJalaliMixin, StackedInlineJalaliMixin, T
 
 @admin.register(SendSMS)
 class SendSmsAdmin(admin.ModelAdmin):
-    change_list_template = 'my_change_list/change_list.html'
+    # change_list_template = 'my_change_list/change_list.html'
     list_display = ['topic', 'get_created_jalali', 'recep']
     autocomplete_fields = ['recipients']
     list_filter = [('created_at', DateRangeFilter)]

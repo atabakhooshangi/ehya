@@ -24,7 +24,7 @@ User = get_user_model()
 class TicketAPIView(CreateAPIView):
     serializer_class = TicketCreateSerializer
     permission_classes = [IsAuthenticated]
-    renderer_classes = [Renderer]
+    renderer_classes = [SimpleRenderer]
     parser_classes = (MultiPartParser, FormParser)
 
     def perform_create(self, serializer):
@@ -51,6 +51,7 @@ class AnswerAPIView(generics.GenericAPIView):
                 ticket_obj.save()
             serializer.save(user=self.request.user, ticket_id=data['ticket'], text=data['text'], file=data['file'])
             return Response({'isDone': True}, status=HTTP_201_CREATED)
+        print('an')
         return Response({'isDone': False, 'data': [{
             'error': 'شما به حداکثر تعداد مجاز پاسخ به سوال رسیده اید. لطفا پرسش جدیدی ایجاد کرده و موضوع خود را به کارشناسان ما مطرح کنید.  '}]},
                         status=HTTP_400_BAD_REQUEST)

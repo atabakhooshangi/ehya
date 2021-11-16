@@ -7,7 +7,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
-from .models import Ticket, Answer, TicketPointCost, Section , TicketAnswerLimit
+from .models import Ticket, Answer, TicketPointCost, Section, TicketAnswerLimit
 from .permissions import is_expert
 
 User = get_user_model()
@@ -42,9 +42,18 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class AnswerGetSerializer(serializers.ModelSerializer):
+
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Answer
         fields = ['user', 'text', 'file', 'created_at']
+
+    def get_user(self,obj):
+        ticket_user = self.context.get("ticket_user")
+        if obj.user.id == ticket_user:
+            return 'کاربر'
+        return 'کارشناس'
 
 
 class TicketCreateSerializer(serializers.ModelSerializer):
@@ -92,6 +101,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 
 class TicketGetSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField(read_only=True)
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = Ticket
@@ -107,7 +117,10 @@ class TicketGetSerializer(serializers.ModelSerializer):
         ]
 
     def get_answers(self, obj):
-        return AnswerGetSerializer(obj.answer_set.all(), many=True).data
+        return AnswerGetSerializer(obj.answer_set.all(), many=True, context={'ticket_user': obj.user.id}).data
+
+    def get_status(self, obj):
+        return obj.get_status_display()
 
 
 class SectionSerializer(serializers.ModelSerializer):
