@@ -8,15 +8,15 @@ User = get_user_model()
 
 
 class InformSerializer(serializers.ModelSerializer):
-    recipients = serializers.SerializerMethodField()
     classification = serializers.SerializerMethodField()
+    inf_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Inform
-        fields = ['recipients', 'topic', 'text', 'classification', 'created_at']
+        fields = ['inf_type', 'topic', 'text', 'classification', 'created_at']
 
-    def get_recipients(self, obj):
-        return obj.get_recipients_display()
+    def get_inf_type(self, obj):
+        return obj.get_inf_type_display()
 
     def get_classification(self, obj):
         return obj.get_classification_display()

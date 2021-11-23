@@ -1,25 +1,14 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.auth.views import get_user_model
+from accounts.models import Role
 
 User = get_user_model()
 
 RECIPIENTS_CHOICES = (
-    ('1', 'عضو عادی'),
-    ('2', 'عضو فعال'),
-    ('3', 'کارشناس'),
-    ('4', 'کارشناس ارشد'),
-    ('5', 'مدیر'),
-    ('6', 'مدیر ارشد'),
-    ('7', 'دانشجو'),
-    ('8', 'استاد'),
-    ('9', 'حکیم'),
-    ('10', 'عضو جامعه'),
-    ('11', 'شورای مرکزی'),
-    ('12', 'مراجعین مطب'),
-    ('13', 'مدیر کل'),
-    ('14', 'عمومی'),
-    ('15', 'خصوصی'),
+    ('1', 'شخصی'),
+    ('2', 'عمومی'),
+    ('3', 'اختصاصی'),
 )
 
 CLASSIFICATION_CHOICES = (
@@ -30,7 +19,10 @@ CLASSIFICATION_CHOICES = (
 
 
 class Inform(models.Model):
-    recipients = models.CharField(_('مخاطبین'), max_length=2, choices=RECIPIENTS_CHOICES, default='14')
+    inf_type = models.CharField(_('نوع'), max_length=2, choices=RECIPIENTS_CHOICES, default='2')
+    roles = models.ManyToManyField(to=Role, blank=True,
+                                   help_text='اگر نوع اطلاعیه اختصاصی است ، نقش های مورد نظر را انتخاب کنید',
+                                   verbose_name=_('نقش های مخاطب اطلاعیه'))
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name=_('کاربر مخاطب'),
                              help_text=_('اگر نوع اطلاعیه شخصی باشد نیاز است کاربر مخاطب مشخص شود'), null=True,
                              blank=True)

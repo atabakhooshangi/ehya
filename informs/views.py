@@ -23,8 +23,8 @@ class GetInformsAPIView(generics.ListAPIView):
     def get_queryset(self):
         inf_type = self.kwargs['inform_type']
         if inf_type == 'public':
-            return Inform.objects.filter(recipients='14')
+            return Inform.objects.filter(inf_type='2')
         if inf_type == 'personal':
-            return Inform.objects.filter(recipients='15', user=self.request.user)
+            return Inform.objects.filter(inf_type='1', user=self.request.user)
         if inf_type == 'roles':
-            return Inform.objects.filter(recipients=self.request.user.role)
+            return Inform.objects.filter(inf_type='3', roles=self.request.user.role)
