@@ -11,15 +11,18 @@ STATUS_CHOICES = (
 
 def upload_location(instance, filename):
     extension = filename.split('.')[-1]
-    ticket_id = Ticket.objects.last().id + 1
+    if len(Ticket.objects.all()) > 0:
+        ticket_id = Ticket.objects.last().id + 1
+    else:
+        ticket_id = 1
     return f'uploads/tickets/ticket{ticket_id}.{extension}'
 
 
 def answer_upload_location(instance, filename):
     extension = filename.split('.')[-1]
-    tikcet_id = instance.ticket.id
+    ticket_id = instance.ticket.id
     answer_id = Ticket.objects.last().id + 1
-    return f'uploads/tickets/ticket{tikcet_id}_answer{answer_id}.{extension}'
+    return f'uploads/tickets/ticket{ticket_id}_answer{answer_id}.{extension}'
 
 
 class TicketAnswerLimit(models.Model):

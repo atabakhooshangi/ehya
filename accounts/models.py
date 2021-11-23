@@ -31,11 +31,22 @@ ROLE_CHOICES = (
     ('11', 'شورای مرکزی'),
     ('12', 'مراجعین مطب'),
     ('13', 'مدیر کل'),
+    ('14', 'مدیر مطب'),
+    ('15', 'مدیر ارشد مطب'),
+    ('16', 'مدیر سایت'),
+    ('17', 'مدیر ارشد سایت'),
+    ('18', 'مدیر اپلیکیشن'),
+    ('19', 'مدیر ارشد اپلیکیشن'),
+    ('20', 'مدیر روابط عمومی'),
+    ('21', 'مدیر ارشد روابط عمومی'),
+    ('22', 'مدیر آموزش'),
+    ('23', 'مدیر ارشد آموزش'),
 )
 
 
 class Role(models.Model):
     name = models.CharField(_('نام نقش'), max_length=50, null=False, blank=False)
+    is_expert = models.BooleanField(_('ارشد'), default=False)
 
     class Meta:
         verbose_name = _('نقش کاربر')
@@ -85,6 +96,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_support = models.BooleanField(default=False, verbose_name=_('تیم پشتیبانی'))
 
     USERNAME_FIELD = 'phone_number'
 

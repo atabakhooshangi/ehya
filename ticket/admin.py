@@ -10,18 +10,23 @@ class AnswerInLine(admin.TabularInline):
     model = models.Answer
     extra = 0
     autocomplete_fields = ['user']
+    readonly_fields = ['user']
+    fields = ['text', 'file', 'user']
 
     def has_view_permission(self, request, obj=None):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_change_permission(self, request, obj=None):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_add_permission(self, request, obj):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
 
 @admin.register(models.Ticket)
@@ -45,22 +50,32 @@ class TicketAdmin(admin.ModelAdmin):
     get_created_jalali.short_description = 'تاریخ ایجاد'
 
     def has_view_permission(self, request, obj=None):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_change_permission(self, request, obj=None):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_add_permission(self, request):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_delete_permission(self, request, obj=None):
         if request.user.is_admin:
             return True
 
     inlines = [AnswerInLine]
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.user = request.user
+            instance.save()
+        formset.save_m2m()
 
 
 @admin.register(models.Answer)
@@ -77,16 +92,19 @@ class AnswerAdmin(admin.ModelAdmin):
     get_created_jalali.short_description = 'تاریخ ایجاد'
 
     def has_view_permission(self, request, obj=None):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_change_permission(self, request, obj=None):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_add_permission(self, request):
-        if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
-            return True
+        if request.user.role:
+            if request.user.is_staff and request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user.is_admin:
+                return True
 
     def has_delete_permission(self, request, obj=None):
         if request.user.is_admin:
@@ -98,9 +116,14 @@ class TicketPointCostAdmin(admin.ModelAdmin):
     list_display = ['id', 'value']
     list_editable = ['value']
 
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        return super().has_add_permission(request)
+
 
 @admin.register(models.Section)
-class TicketPointCostAdmin(admin.ModelAdmin):
+class SectionAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
     list_editable = ['name']
 
@@ -109,3 +132,8 @@ class TicketPointCostAdmin(admin.ModelAdmin):
 class TicketAnswerLimitAdmin(admin.ModelAdmin):
     list_display = ['id', 'value']
     list_editable = ['value']
+
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        return super().has_add_permission(request)

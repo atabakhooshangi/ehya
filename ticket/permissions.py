@@ -37,3 +37,12 @@ class IsExpertOrIsOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return request.user.role.name in ['کارشناس', 'کارشناس ارشد'] or request.user == obj.user
+
+
+class IsTreasureAdminOrSeniorAdmin(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return bool(
+            request.user and request.user.is_authenticated and request.user.role.name in ['مدیر کل',
+                                                                                          'مدیر گنجینه']) or bool(
+            request.user and request.user.is_authenticated and request.user.is_admin)

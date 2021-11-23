@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'ticket.apps.TicketConfig',
     'informs.apps.InformsConfig',
     'sms.apps.SmsConfig',
+    'treasure.apps.TreasureConfig',
     'support.apps.SupportConfig',
     'jalali_date',
     # swagger
@@ -139,12 +140,10 @@ USE_TZ = True
 
 AUTH_USER_MODEL = "accounts.User"
 
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATICFILES_DIRS = [BASE_DIR / 'assets']
+# STATICFILES_DIRS = [BASE_DIR / 'assets']
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
@@ -210,11 +209,9 @@ JALALI_DATE_DEFAULTS = {
     },
 }
 
-
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-
 
 # JET_THEMES = [
 #     {

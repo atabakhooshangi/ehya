@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import SendSMS
 from jalali_date import datetime2jalali, date2jalali
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
-# from jet.filters import DateRangeFilter
 
 from jalali_date.admin import ModelAdminJalaliMixin, StackedInlineJalaliMixin, TabularInlineJalaliMixin
 

@@ -17,9 +17,9 @@ class RoleAdmin(admin.ModelAdmin):
 
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'phone_number', 'role', 'is_active', 'is_admin', 'is_staff', 'is_superuser',
-                    'get_created_jalali']
-    list_editable = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser']
+    list_display = ['id', 'phone_number', 'role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support'
+        , 'get_created_jalali']
+    list_editable = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support']
     list_filter = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser']
     search_fields = ['phone_number', 'first_name']
 
@@ -28,7 +28,7 @@ class UserAdmin(admin.ModelAdmin):
     fieldsets = [
         ('اطلاعات تماس', {
             'fields': (
-                'phone_number', 'email')}),
+                'phone_number', 'email','password')}),
         ('مشخصات فردی', {
             'fields': (
                 'first_name', 'last_name', 'province', 'city', 'birthday', 'gender', 'degree',
@@ -41,7 +41,7 @@ class UserAdmin(admin.ModelAdmin):
             'fields': ('points', 'profile_completion_point')
         }),
         ('بخش سطح کاربری', {
-            'fields': ('user_permissions', 'is_admin', 'is_staff', 'is_superuser', 'is_active', 'role')
+            'fields': ('user_permissions', 'is_admin', 'is_staff', 'is_superuser', 'is_active', 'is_support', 'role')
         }),
         ('اطلاعات بیشتر', {
             'fields': ('ip', 'verify_code')
@@ -78,6 +78,11 @@ class UserAdmin(admin.ModelAdmin):
 class ProfileCompletionPointsAdmin(admin.ModelAdmin):
     list_display = ['id', 'value']
     list_editable = ['value']
+
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        return super().has_add_permission(request)
 
 
 admin.site.unregister(Group)
