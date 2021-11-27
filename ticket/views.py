@@ -25,7 +25,7 @@ class TicketAPIView(CreateAPIView):
     serializer_class = TicketCreateSerializer
     permission_classes = [IsAuthenticated]
     renderer_classes = [SimpleRenderer]
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)0
 
     def perform_create(self, serializer):
         data = self.request.data
@@ -49,7 +49,7 @@ class AnswerAPIView(generics.GenericAPIView):
             if ticket_obj.status == '1':
                 ticket_obj.status = '3'
                 ticket_obj.save()
-            serializer.save(user=self.request.user, ticket_id=data['ticket'], text=data['text'], file=data['file'])
+            serializer.save(user=self.request.user)
             return Response({'isDone': True}, status=HTTP_201_CREATED)
         print('an')
         return Response({'isDone': False, 'data': [{

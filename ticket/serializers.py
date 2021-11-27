@@ -3,6 +3,9 @@ from django.contrib.auth.views import get_user_model
 from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
+import base64
+from django.core.files.base import ContentFile
+
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.views import get_user_model
@@ -13,17 +16,22 @@ from .permissions import is_expert
 User = get_user_model()
 
 
+
+
+
+
 class AnswerSerializer(serializers.ModelSerializer):
     ticket = serializers.CharField(max_length=255)
+    base_64_file = serializers.CharField()
 
     class Meta:
         model = Answer
-        fields = ['ticket', 'text', 'file']
+        fields = ['ticket', 'text', 'base_64_file']
 
     def validate(self, attrs):
         try:
             Ticket.objects.get(id=int(attrs.get('ticket')))
-        except:
+        except Exception:
             raise serializers.ValidationError({'ticket': _('تیکت وارد شده وجود ندارد')})
         # else:
         #     if not is_expert(self.context.get('request').user):
@@ -32,24 +40,26 @@ class AnswerSerializer(serializers.ModelSerializer):
         return attrs
 
     def save(self, **kwargs):
+        f_format, imgstr = self.validated_data.get('base_64_file').split(';base64,')
+        ext = f_format.split('/')[-1]
+        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+
         user = kwargs['user']
-        ticket_id = kwargs['ticket_id']
-        text = kwargs['text']
-        file = kwargs['file']
-        answer = Answer.objects.create(user=user, ticket_id=ticket_id, text=text, file=file)
+        answer = Answer.objects.create(user=user, ticket_id=int(self.validated_data['ticket']),
+                                       text=self.validated_data['text'],
+                                       file=data if 'file' in self.validated_data else None)
 
         return answer
 
 
 class AnswerGetSerializer(serializers.ModelSerializer):
-
     user = serializers.SerializerMethodField()
 
     class Meta:
         model = Answer
         fields = ['user', 'text', 'file', 'created_at']
 
-    def get_user(self,obj):
+    def get_user(self, obj):
         ticket_user = self.context.get("ticket_user")
         if obj.user.id == ticket_user:
             return 'کاربر'
@@ -59,6 +69,7 @@ class AnswerGetSerializer(serializers.ModelSerializer):
 class TicketCreateSerializer(serializers.ModelSerializer):
     section = serializers.SerializerMethodField(read_only=True)
     section_id = serializers.CharField(max_length=10, write_only=True)
+    base_64_file = serializers.CharField()
 
     class Meta:
         model = Ticket
@@ -68,7 +79,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
             'section',
             'section_id',
             'request_text',
-            'file',
+            'base_64_file',
             'status',
             'created_at',
         ]
@@ -88,11 +99,16 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         user = kwargs['user']
+
+        f_format, imgstr = self.validated_data.get('base_64_file').split(';base64,')
+        ext = f_format.split('/')[-1]
+        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+
         section = get_object_or_404(Section, id=int(self.validated_data.get('section_id')))
         ticket = Ticket.objects.create(user=user, topic=self.validated_data.get('topic'),
                                        section=section,
                                        request_text=self.validated_data.get('request_text'),
-                                       file=self.validated_data.get('file'))
+                                       file=data)
         if user.check_point_status_for_ticket:
             user.points -= TicketPointCost.objects.last().value
             user.save()
