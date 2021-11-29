@@ -25,6 +25,7 @@ class TicketAPIView(CreateAPIView):
     serializer_class = TicketCreateSerializer
     permission_classes = [IsAuthenticated]
     renderer_classes = [SimpleRenderer]
+
     # parser_classes = (MultiPartParser, FormParser)0
 
     def perform_create(self, serializer):
@@ -101,7 +102,7 @@ class TicketGetAPIView(generics.ListAPIView):
         return Ticket.objects.filter(user=self.request.user)
 
 
-class RetrieveATicketAPIView(generics.RetrieveAPIView):
+class RetrieveATicketAPIView(generics.GenericAPIView):
     serializer_class = TicketGetSerializer
     renderer_classes = [Renderer]
     permission_classes = [IsExpertOrIsOwner]
@@ -110,6 +111,11 @@ class RetrieveATicketAPIView(generics.RetrieveAPIView):
         obj = get_object_or_404(Ticket, id=int(self.request.data['ticket']))
         self.check_object_permissions(request=self.request, obj=obj)
         return obj
+
+    def get(self, request, *args, **kwargs):
+        obj = self.get_object()
+        serializer = self.serializer_class(obj)
+        return Response(serializer.data, status=HTTP_200_OK)
 
 
 class SectionListApiView(generics.ListAPIView):
