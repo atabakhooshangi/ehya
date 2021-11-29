@@ -16,13 +16,9 @@ from .permissions import is_expert
 User = get_user_model()
 
 
-
-
-
-
 class AnswerSerializer(serializers.ModelSerializer):
     ticket = serializers.CharField(max_length=255)
-    base_64_file = serializers.CharField()
+    base_64_file = serializers.CharField(required=False)
 
     class Meta:
         model = Answer
@@ -40,14 +36,16 @@ class AnswerSerializer(serializers.ModelSerializer):
         return attrs
 
     def save(self, **kwargs):
-        f_format, imgstr = self.validated_data.get('base_64_file').split(';base64,')
-        ext = f_format.split('/')[-1]
-        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
+        if 'base_64_file' in self.validated_data:
+            f_format, imgstr = self.validated_data.get('base_64_file').split(';base64,')
+            ext = f_format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        else:
+            data = None
         user = kwargs['user']
         answer = Answer.objects.create(user=user, ticket_id=int(self.validated_data['ticket']),
                                        text=self.validated_data['text'],
-                                       file=data if 'file' in self.validated_data else None)
+                                       file=data)
 
         return answer
 
@@ -69,7 +67,7 @@ class AnswerGetSerializer(serializers.ModelSerializer):
 class TicketCreateSerializer(serializers.ModelSerializer):
     section = serializers.SerializerMethodField(read_only=True)
     section_id = serializers.CharField(max_length=10, write_only=True)
-    base_64_file = serializers.CharField()
+    base_64_file = serializers.CharField(required=False)
 
     class Meta:
         model = Ticket
@@ -99,11 +97,12 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         user = kwargs['user']
-
-        f_format, imgstr = self.validated_data.get('base_64_file').split(';base64,')
-        ext = f_format.split('/')[-1]
-        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-
+        if 'base_64_file' in self.validated_data:
+            f_format, imgstr = self.validated_data.get('base_64_file').split(';base64,')
+            ext = f_format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        else:
+            data = None
         section = get_object_or_404(Section, id=int(self.validated_data.get('section_id')))
         ticket = Ticket.objects.create(user=user, topic=self.validated_data.get('topic'),
                                        section=section,

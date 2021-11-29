@@ -13,20 +13,24 @@ Unsupported_Extensions = ['mkv', 'mp4', 'mov', 'wmv', 'avi', 'avchd', 'flv', 'f4
 
 class TreasureSerializer(serializers.ModelSerializer):
     user = serializers.CharField(max_length=40, read_only=True)
-    base_64_file = serializers.CharField()
+    base_64_file = serializers.CharField(required=False)
 
     class Meta:
         model = Treasury
         fields = ['id', 'user', 'topic', 'link', 'base_64_file']
 
     def validate(self, attrs):
-        f_format, imgstr = attrs.get('base_64_file').split(';base64,')
-        extension = f_format.split('/')[-1]
-        data = ContentFile(base64.b64decode(imgstr), name='temp.' + extension)
+        if 'base_64_file' in attrs:
+            f_format, imgstr = attrs.get('base_64_file').split(';base64,')
+            extension = f_format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name='temp.' + extension)
 
-        if extension in Unsupported_Extensions:
-            raise serializers.ValidationError({'file': 'فایل ارسالی نمیتواند ویدئو باشد . فقط تصویر و صوت مجاز است.'})
-        attrs['base_64_file'] = data
+            if extension in Unsupported_Extensions:
+                raise serializers.ValidationError(
+                    {'file': 'فایل ارسالی نمیتواند ویدئو باشد . فقط تصویر و صوت مجاز است.'})
+            attrs['base_64_file'] = data
+        else:
+            attrs['base_64_file'] = None
         return attrs
 
     def save(self, **kwargs):
