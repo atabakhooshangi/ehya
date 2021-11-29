@@ -108,7 +108,8 @@ class RetrieveATicketAPIView(generics.GenericAPIView):
     permission_classes = [IsExpertOrIsOwner]
 
     def get_object(self):
-        print(self.request.META)
+        obj2 = get_object_or_404(Ticket, id=int(self.request.data['data']))
+        print(obj2)
         obj = get_object_or_404(Ticket, id=int(self.request.META['HTTP_TICKET']))
         self.check_object_permissions(request=self.request, obj=obj)
         return obj
