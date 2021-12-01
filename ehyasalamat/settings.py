@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     # api
     'rest_framework',
     'rangefilter',
-
+    # jwt
     # cors
     'corsheaders',
 ]

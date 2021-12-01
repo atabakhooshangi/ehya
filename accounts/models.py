@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils.translation import ugettext as _
 from ticket.models import TicketPointCost
-from rest_framework import exceptions
 from rest_framework_simplejwt.tokens import RefreshToken
 
 GENDER_CHOICES = (

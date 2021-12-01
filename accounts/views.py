@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from .utils import get_visitor_ipaddress
 from .models import ProfileCompletionPoints, Role
 
+
 User = get_user_model()
 
 
@@ -119,4 +120,3 @@ class GetRolesAPIView(generics.ListAPIView):
     serializer_class = RoleSerializer
     permission_classes = [AllowAny]
     queryset = Role.objects.all()
-
