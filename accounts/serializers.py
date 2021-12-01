@@ -43,7 +43,8 @@ class VerificationCodeSerializer(serializers.Serializer):
     def validate(self, attrs):
         user = get_object_or_404(User, phone_number=attrs.get('phone_number'))
         if user.verify_code == attrs.get('code'):
-            if not user.is_active: user.is_active = True
+            if not user.is_active:
+                user.is_active = True
             # user.verify_code = None
             user.save()
             return user.tokens

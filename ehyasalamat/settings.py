@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'jalali_date',
     # swagger
     'drf_yasg',
-
     # api
     'rest_framework',
     'rangefilter',

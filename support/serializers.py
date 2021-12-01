@@ -2,6 +2,7 @@ from django.core import exceptions
 from django.contrib.auth.views import get_user_model
 from django.db import IntegrityError
 from django.utils.translation import ugettext as _
+from jalali_date import datetime2jalali
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
@@ -12,6 +13,7 @@ from .models import SupportTicket, SupportAnswer
 
 class SupportAnswerGetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportAnswer
@@ -23,10 +25,14 @@ class SupportAnswerGetSerializer(serializers.ModelSerializer):
             return 'کاربر'
         return 'پشتیبان'
 
+    def get_created_at(self, obj):
+        return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
+
 
 class SupportTicketSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField(read_only=True)
     section = serializers.CharField(max_length=20)
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportTicket
@@ -37,6 +43,9 @@ class SupportTicketSerializer(serializers.ModelSerializer):
         if request.method == 'GET':
             return obj.get_status_display()
         return None
+
+    def get_created_at(self, obj):
+        return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
     def validate(self, attrs):
         user = None
@@ -60,6 +69,7 @@ class GetSupportTicketSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField(read_only=True)
     answers = serializers.SerializerMethodField(read_only=True)
     section = serializers.CharField(max_length=20)
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportTicket
@@ -74,6 +84,9 @@ class GetSupportTicketSerializer(serializers.ModelSerializer):
     def get_answers(self, obj):
         return SupportAnswerGetSerializer(obj.supportanswer_set.all(), many=True,
                                           context={'ticket_user': obj.user.id}).data
+
+    def get_created_at(self, obj):
+        return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
 
 class SupportAnswerSerializer(serializers.ModelSerializer):

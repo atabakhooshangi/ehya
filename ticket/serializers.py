@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 from rest_framework import serializers
 import base64
 from django.core.files.base import ContentFile
-
+from jalali_date import datetime2jalali, date2jalali
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.views import get_user_model
@@ -117,6 +117,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 class TicketGetSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Ticket
@@ -136,6 +137,9 @@ class TicketGetSerializer(serializers.ModelSerializer):
 
     def get_status(self, obj):
         return obj.get_status_display()
+
+    def get_created_at(self, obj):
+        return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
 
 class SectionSerializer(serializers.ModelSerializer):
