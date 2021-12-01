@@ -52,6 +52,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class AnswerGetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Answer
@@ -62,6 +63,9 @@ class AnswerGetSerializer(serializers.ModelSerializer):
         if obj.user.id == ticket_user:
             return 'کاربر'
         return 'کارشناس'
+
+    def get_created_at(self, obj):
+        return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
 
 class TicketCreateSerializer(serializers.ModelSerializer):
