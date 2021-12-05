@@ -48,7 +48,7 @@ class RetrieveTreasuresAPIView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     renderer_classes = [Renderer]
 
-    def retrieve(self, request, *args, **kwargs):
+    def get_queryset(self):
         obj = get_object_or_404(Treasury, id=self.kwargs['pk'])
         serializer = self.serializer_class(obj)
         if self.request.user.role in ['مدیر کل', 'مدیر گنجینه'] or self.request.user == obj.user:

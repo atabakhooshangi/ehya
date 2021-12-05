@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/informs/', include('informs.urls', namespace='Informs')),
     path('api/treasure/', include('treasure.urls', namespace='Treasure')),
     path('api/support/', include('support.urls', namespace='Support')),
+    path('api/home/', include('home.urls', namespace='Home')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

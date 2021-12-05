@@ -6,7 +6,6 @@ from accounts.renderers import Renderer, SimpleRenderer
 from .utils import reached_answer_limit
 
 # Django imports
-from django.utils.translation import ugettext as _
 from django.contrib.auth import get_user_model
 
 # Rest Framework imports
@@ -98,8 +97,11 @@ class TicketGetAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         if self.request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
-            return Ticket.objects.all()
-        return Ticket.objects.filter(user=self.request.user)
+            return Ticket.objects.all() if self.request.query_params.get('filter') == 'all' else Ticket.objects.filter(
+                status=self.request.query_params.get('filter'))
+        return Ticket.objects.filter(user=self.request.user) if self.request.query_params.get(
+            'filter') == 'all' else Ticket.objects.filter(user=self.request.user,
+                                                          status=self.request.query_params.get('filter'))
 
 
 class RetrieveATicketAPIView(generics.GenericAPIView):

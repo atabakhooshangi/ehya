@@ -95,10 +95,21 @@ WSGI_APPLICATION = 'ehyasalamat.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+DATABASE_ROUTERS = ['home.db_router.WordPressRouter']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'word': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ravazade_jannahtest',
+        'USER': 'ravazade_saeedi1',
+        'PASSWORD': 'DkhP%g(gf',
+        'HOST': '5.63.8.190',
+        'PORT': '3306',
+
     }
 }
 
