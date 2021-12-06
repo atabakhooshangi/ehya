@@ -43,13 +43,13 @@ class GetAllTreasuresAPIView(generics.ListAPIView):
     queryset = Treasury.objects.all()
 
 
-class RetrieveTreasuresAPIView(generics.RetrieveAPIView):
+class RetrieveTreasuresAPIView(generics.GenericAPIView):
     serializer_class = TreasureSerializer
     permission_classes = [IsAuthenticated]
     renderer_classes = [Renderer]
 
-    def get_queryset(self):
-        obj = get_object_or_404(Treasury, id=self.kwargs['pk'])
+    def get(self, request, *args, **kwargs):
+        obj = get_object_or_404(Treasury, id=int(self.request.META['HTTP_ID']))
         serializer = self.serializer_class(obj)
         if self.request.user.role in ['مدیر کل', 'مدیر گنجینه'] or self.request.user == obj.user:
             return Response(serializer.data, HTTP_200_OK)
