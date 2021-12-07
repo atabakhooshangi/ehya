@@ -121,6 +121,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 class TicketGetSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField()
+    section = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
 
     class Meta:
@@ -138,6 +139,9 @@ class TicketGetSerializer(serializers.ModelSerializer):
 
     def get_answers(self, obj):
         return AnswerGetSerializer(obj.answer_set.all(), many=True, context={'ticket_user': obj.user.id}).data
+
+    def get_section(self, obj):
+        return obj.section.name
 
     def get_status(self, obj):
         return obj.get_status_display()
