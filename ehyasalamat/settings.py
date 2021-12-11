@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'sms.apps.SmsConfig',
     'treasure.apps.TreasureConfig',
     'support.apps.SupportConfig',
+    # 'home.apps.HomeConfig',
     'jalali_date',
     # swagger
     'drf_yasg',
@@ -104,10 +105,10 @@ DATABASES = {
     },
     'word': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ravazade_jannahtest',
-        'USER': 'ravazade_saeedi1',
-        'PASSWORD': 'DkhP%g(gf',
-        'HOST': '5.63.8.190',
+        'NAME': 'wp572',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
         'PORT': '3306',
 
     }

@@ -32,7 +32,6 @@ class SupportAnswerGetSerializer(serializers.ModelSerializer):
 class SupportTicketSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField(read_only=True)
     section = serializers.CharField(max_length=20)
-    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportTicket
@@ -44,16 +43,13 @@ class SupportTicketSerializer(serializers.ModelSerializer):
             return obj.get_status_display()
         return None
 
-    def get_created_at(self, obj):
-        return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
-
     def validate(self, attrs):
         user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
         if not user.profile_done:
-            raise serializers.ValidationError(_('ابتدا باید پروفایل خود را تکمیل کنید.'))
+            raise serializers.ValidationError({'profile': 'ابتدا باید پروفایل خود را تکمیل کنید.'})
         return attrs
 
     def save(self, **kwargs):
