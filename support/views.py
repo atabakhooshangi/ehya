@@ -1,6 +1,7 @@
 # Internal imports
 from .models import SupportTicket, SupportSection
-from .serializers import SupportTicketSerializer, GetSupportTicketSerializer, SupportAnswerSerializer
+from .serializers import SupportTicketSerializer, GetSupportTicketSerializer, SupportAnswerSerializer, \
+    SupportSectionSerializer
 from .utils import reached_support_answer_limit
 from ticket.permissions import is_expert, IsOwner, IsExpert, IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
@@ -100,3 +101,10 @@ def reference_to_senior_support(request, ticket_id):
             ticket.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
         return Response({'isDone': False}, status=HTTP_403_FORBIDDEN)
+
+
+class SupportSectionAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = SupportSectionSerializer
+    renderer_classes = [Renderer]
+    queryset = SupportSection.objects.all()

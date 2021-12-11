@@ -8,7 +8,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
-from .models import SupportTicket, SupportAnswer
+from .models import SupportTicket, SupportAnswer, SupportSection
 
 
 class SupportAnswerGetSerializer(serializers.ModelSerializer):
@@ -106,3 +106,23 @@ class SupportAnswerSerializer(serializers.ModelSerializer):
                                               text=self.validated_data['text'])
 
         return answer
+
+
+class SupportSectionSerializer(serializers.ModelSerializer):
+    associated_roles = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SupportSection
+        fields = [
+            'id',
+            'name',
+            'associated_roles',
+            'active',
+        ]
+
+    def get_associated_roles(self, obj):
+        res = []
+        roles = obj.associated_roles.values('name')
+        # [res.append(i['name']) for i in roles]
+        list(map(lambda i: res.append(i['name']), (i for i in roles)))
+        return res

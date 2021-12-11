@@ -1,11 +1,24 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 
-STATUS_CHOICES = (
+USER_STATUS_CHOICES = (
+    ('1', 'در حال بررسی'),
+    ('2', 'پاسخ داده شده'),
+    ('3', 'بسته شده'),
+)
+
+EXPERT_STATUS_CHOICES = (
     ('1', 'جدید'),
-    ('2', 'در حال بررسی'),
+    ('2', 'ارجاء به کارشناس ارشد'),
     ('3', 'پاسخ داده شده'),
-    ('4', 'بسته شده')
+    ('4', 'بسته شده'),
+    ('5', 'پاسخ کاربر'),
+
+)
+
+ANSWER_CHOICES = (
+    ('1', 'دیده شده'),
+    ('2', 'دیده نشده'),
 )
 
 
@@ -54,7 +67,7 @@ class Ticket(models.Model):
                                 blank=False)
     request_text = models.TextField(_('متن درخواست'), null=False, blank=True)
     file = models.FileField(upload_to=upload_location, verbose_name=_('فایل ضمیمه'), null=True, blank=True)
-    status = models.CharField(choices=STATUS_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=1)
+    status = models.CharField(choices=USER_STATUS_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=1)
     created_at = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
 
     class Meta:
