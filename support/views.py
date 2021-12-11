@@ -74,7 +74,7 @@ class RetrieveTicketSerializer(generics.RetrieveAPIView):
     permission_classes = [IsSupportAdminOrOwner]
 
     def get_object(self):
-        obj = get_object_or_404(SupportTicket, id=self.kwargs['pk'])
+        obj = get_object_or_404(SupportTicket, id=int(self.request.META['HTTP_ID']))
         self.check_object_permissions(request=self.request, obj=obj)
         return obj
 
