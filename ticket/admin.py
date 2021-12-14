@@ -11,7 +11,7 @@ class AnswerInLine(admin.TabularInline):
     extra = 0
     autocomplete_fields = ['user']
     readonly_fields = ['user']
-    fields = ['text', 'file', 'user']
+    fields = ['text', 'file', 'status', 'user']
 
     def has_view_permission(self, request, obj=None):
         if request.user.role:
@@ -31,10 +31,10 @@ class AnswerInLine(admin.TabularInline):
 
 @admin.register(models.Ticket)
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'topic', 'status', 'file_link', 'get_created_jalali', ]
+    list_display = ['id', 'user', 'topic', 'status_for_user', 'status_for_expert', 'file_link', 'get_created_jalali', ]
     autocomplete_fields = ['user']
-    list_editable = ['status']
-    list_filter = ['user', 'status', 'created_at']
+    list_editable = ['status_for_user', 'status_for_expert']
+    list_filter = ['user', 'status_for_user', 'status_for_expert', 'created_at']
     search_fields = ['topic', 'user__phone_number']
     raw_id_fields = ['user']
 

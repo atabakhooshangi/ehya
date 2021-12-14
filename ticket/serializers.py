@@ -53,10 +53,11 @@ class AnswerSerializer(serializers.ModelSerializer):
 class AnswerGetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = Answer
-        fields = ['user', 'text', 'file', 'created_at']
+        fields = ['user', 'text', 'status', 'file', 'created_at']
 
     def get_user(self, obj):
         ticket_user = self.context.get("ticket_user")
@@ -66,6 +67,9 @@ class AnswerGetSerializer(serializers.ModelSerializer):
 
     def get_created_at(self, obj):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
+
+    def get_status(self, obj):
+        return obj.get_status_display()
 
 
 class TicketCreateSerializer(serializers.ModelSerializer):
@@ -82,7 +86,6 @@ class TicketCreateSerializer(serializers.ModelSerializer):
             'section_id',
             'request_text',
             'base_64_file',
-            'status',
             'created_at',
         ]
 
@@ -120,7 +123,8 @@ class TicketCreateSerializer(serializers.ModelSerializer):
 
 class TicketGetSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField(read_only=True)
-    status = serializers.SerializerMethodField()
+    status_for_user = serializers.SerializerMethodField()
+    status_for_expert = serializers.SerializerMethodField()
     section = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
 
@@ -132,7 +136,8 @@ class TicketGetSerializer(serializers.ModelSerializer):
             'section',
             'request_text',
             'file',
-            'status',
+            'status_for_user',
+            'status_for_expert',
             'created_at',
             'answers'
         ]
@@ -143,8 +148,11 @@ class TicketGetSerializer(serializers.ModelSerializer):
     def get_section(self, obj):
         return obj.section.name
 
-    def get_status(self, obj):
-        return obj.get_status_display()
+    def get_status_for_user(self, obj):
+        return obj.get_status_for_user_display()
+
+    def get_status_for_expert(self, obj):
+        return obj.get_status_for_expert_display()
 
     def get_created_at(self, obj):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
@@ -154,3 +162,5 @@ class SectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Section
         fields = ['id', 'name']
+
+
