@@ -8,7 +8,8 @@ from .models import Treasury
 
 User = get_user_model()
 
-Unsupported_Extensions = ['mkv', 'mp4', 'mov', 'wmv', 'avi', 'avchd', 'flv', 'f4v', 'swf', 'webm']
+
+# Unsupported_Extensions = ['mkv', 'mp4', 'mov', 'wmv', 'avi', 'avchd', 'flv', 'f4v', 'swf', 'webm']
 
 
 class TreasureSerializer(serializers.ModelSerializer):
@@ -21,13 +22,16 @@ class TreasureSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if 'base_64_file' in attrs:
-            f_format, imgstr = attrs.get('base_64_file').split(';base64,')
+            f_format, filestr = attrs.get('base_64_file').split(';base64,')
             extension = f_format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + extension)
+            data = ContentFile(base64.b64decode(filestr), name='temp.' + extension)
+            print('ata')
+            print(data.name)
+            print(data.size)
 
-            if extension in Unsupported_Extensions:
+            if data.size > 5242880:
                 raise serializers.ValidationError(
-                    {'file': 'فایل ارسالی نمیتواند ویدئو باشد . فقط تصویر و صوت مجاز است.'})
+                    {'file': 'فایل ارسالی نمیتواند بیشتر از 5 مگابایت باشد .'})
             attrs['base_64_file'] = data
         else:
             attrs['base_64_file'] = None

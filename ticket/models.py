@@ -67,7 +67,11 @@ class Ticket(models.Model):
                                 blank=False)
     request_text = models.TextField(_('متن درخواست'), null=False, blank=True)
     file = models.FileField(upload_to=upload_location, verbose_name=_('فایل ضمیمه'), null=True, blank=True)
-    status = models.CharField(choices=USER_STATUS_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=1)
+    status_for_user = models.CharField(choices=USER_STATUS_CHOICES, verbose_name=_('وضعیت برای کاربر'), max_length=1,
+                                       default=1)
+    status_for_expert = models.CharField(choices=EXPERT_STATUS_CHOICES, verbose_name=_('وضعیت برای کارشناس'),
+                                         max_length=1,
+                                         default=1)
     created_at = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
 
     class Meta:
@@ -86,6 +90,8 @@ class Answer(models.Model):
                                blank=False)
     text = models.TextField(_('متن پاسخ'), null=True, blank=True)
     file = models.FileField(upload_to=answer_upload_location, verbose_name=_('فایل ضمیمه'), null=True, blank=True)
+    status = models.CharField(choices=ANSWER_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=2)
+    seen_at = models.DateTimeField(verbose_name=_('تاریخ دیده شدن'), null=True, blank=True)
     created_at = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
 
     class Meta:

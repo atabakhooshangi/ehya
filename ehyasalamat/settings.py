@@ -256,3 +256,5 @@ CELERY_TASK_SERIALIZER = 'json'
 #         'title': 'Light Gray'
 #     }
 # ]
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 9015165

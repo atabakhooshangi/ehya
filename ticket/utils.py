@@ -1,7 +1,7 @@
 from .models import Answer, TicketAnswerLimit, Ticket
 
 
-def reached_answer_limit(user, obj: Ticket):
+def not_reached_answer_limit(user, obj: Ticket):
     """
     indicates user has reached ticket answer limit
     :param user:

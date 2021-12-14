@@ -1,9 +1,11 @@
 # Internal imports
+import datetime
+
 from .models import Ticket, TicketPointCost, Section
 from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer
 from .permissions import is_expert, IsOwner, IsExpert, IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
-from .utils import reached_answer_limit
+from .utils import not_reached_answer_limit
 
 # Django imports
 from django.contrib.auth import get_user_model
@@ -45,13 +47,16 @@ class AnswerAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         ticket_obj = Ticket.objects.get(id=data['ticket'])
         self.check_object_permissions(request=request, obj=ticket_obj)
-        if reached_answer_limit(user=request.user, obj=ticket_obj):
-            if ticket_obj.status == '1':
-                ticket_obj.status = '3'
-                ticket_obj.save()
+        if not_reached_answer_limit(user=request.user, obj=ticket_obj):
+            if request.user == ticket_obj.user:
+                ticket_obj.status_for_user = '1'
+                ticket_obj.status_for_expert = '5'
+            else:
+                ticket_obj.status_for_user = '2'
+                ticket_obj.status_for_expert = '3'
+            ticket_obj.save()
             serializer.save(user=self.request.user)
             return Response({'isDone': True}, status=HTTP_201_CREATED)
-        print('an')
         return Response({'isDone': False, 'data': [{
             'error': 'شما به حداکثر تعداد مجاز پاسخ به سوال رسیده اید. لطفا پرسش جدیدی ایجاد کرده و موضوع خود را به کارشناسان ما مطرح کنید.  '}]},
                         status=HTTP_400_BAD_REQUEST)
@@ -59,11 +64,12 @@ class AnswerAPIView(generics.GenericAPIView):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def close_ticket(request, ticket_id):
+def close_ticket(request):
     if request.method == 'POST':
         if request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
-            ticket = get_object_or_404(Ticket, id=ticket_id)
-            ticket.status = '4'
+            ticket = get_object_or_404(Ticket, id=request.META['HTTP_ID'])
+            ticket.status_for_user = '3'
+            ticket.status_for_expert = '4'
             ticket.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
         return Response({'isDone': False}, status=HTTP_403_FORBIDDEN)
@@ -71,11 +77,12 @@ def close_ticket(request, ticket_id):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def reference_to_senior_expert(request, ticket_id):
+def reference_to_senior_expert(request):
     if request.method == 'POST':
         if request.user.role.name == 'کارشناس':
-            ticket = get_object_or_404(Ticket, id=ticket_id)
-            ticket.status = '2'
+            ticket = get_object_or_404(Ticket, id=request.META['HTTP_ID'])
+            ticket.status_for_user = '1'
+            ticket.status_for_expert = '2'
             ticket.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
         return Response({'isDone': False}, status=HTTP_403_FORBIDDEN)
@@ -126,3 +133,17 @@ class SectionListApiView(generics.ListAPIView):
     permission_classes = [AllowAny]
     renderer_classes = [Renderer]
     queryset = Section.objects.all()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def seen_by_user(request):
+    if request.method == 'POST':
+        ticket = get_object_or_404(Ticket, id=request.META['HTTP_ID'])
+        if request.user == ticket.user:
+            answers = ticket.answer_set.filter(user__answer=request.user)
+            for answer in answers:
+                answer.status = '1'
+                answer.seen_at = datetime.datetime.now()
+                answer.save()
+            return Response({'isDone': True}, status=HTTP_200_OK)
