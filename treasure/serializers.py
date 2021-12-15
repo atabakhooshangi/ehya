@@ -11,6 +11,11 @@ User = get_user_model()
 
 # Unsupported_Extensions = ['mkv', 'mp4', 'mov', 'wmv', 'avi', 'avchd', 'flv', 'f4v', 'swf', 'webm']
 
+class GetTreasureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Treasury
+        fields = ['id', 'user', 'topic', 'link', 'file']
+
 
 class TreasureSerializer(serializers.ModelSerializer):
     user = serializers.CharField(max_length=40, read_only=True)
@@ -25,10 +30,6 @@ class TreasureSerializer(serializers.ModelSerializer):
             f_format, filestr = attrs.get('base_64_file').split(';base64,')
             extension = f_format.split('/')[-1]
             data = ContentFile(base64.b64decode(filestr), name='temp.' + extension)
-            print('ata')
-            print(data.name)
-            print(data.size)
-
             if data.size > 5242880:
                 raise serializers.ValidationError(
                     {'file': 'فایل ارسالی نمیتواند بیشتر از 5 مگابایت باشد .'})

@@ -1,7 +1,7 @@
 # Internal imports
 from ticket.permissions import IsTreasureAdminOrSeniorAdmin
 from .models import Treasury
-from .serializers import TreasureSerializer
+from .serializers import TreasureSerializer, GetTreasureSerializer
 from accounts.renderers import Renderer, SimpleRenderer
 
 # Django imports
@@ -31,13 +31,16 @@ class CreateTreasureAPIView(generics.GenericAPIView):
         return Response(status=HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
-        objs = Treasury.objects.filter(user=request.user)
-        serializer = self.serializer_class(objs, many=True)
+        if 'treasure.view_treasury' in request.user.get_user_permissions():
+            objs = Treasury.objects.all()
+        else:
+            objs = Treasury.objects.filter(user=request.user)
+        serializer = GetTreasureSerializer(objs, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
 
 
 class GetAllTreasuresAPIView(generics.ListAPIView):
-    serializer_class = TreasureSerializer
+    serializer_class = GetTreasureSerializer
     permission_classes = [IsTreasureAdminOrSeniorAdmin]
     renderer_classes = [Renderer]
     queryset = Treasury.objects.all()
