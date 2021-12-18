@@ -77,7 +77,7 @@ docs/_build/
 # PyBuilder
 target/
 media
-
+venv
 ### Django ###
 *.log
 *.pot
