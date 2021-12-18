@@ -1,20 +1,34 @@
+import json
+
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
 import base64
 from django.core.files.base import ContentFile
-from .models import Treasury
+from .models import Treasury, TreasureAnswer
 
 User = get_user_model()
+
+
+class TreasureAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TreasureAnswer
+        fields = ['text']
 
 
 # Unsupported_Extensions = ['mkv', 'mp4', 'mov', 'wmv', 'avi', 'avchd', 'flv', 'f4v', 'swf', 'webm']
 
 class GetTreasureSerializer(serializers.ModelSerializer):
+    answer = serializers.SerializerMethodField()
+
     class Meta:
         model = Treasury
-        fields = ['id', 'user', 'topic', 'link', 'file']
+        fields = ['id', 'user', 'topic', 'link', 'file','answer']
+
+    def get_answer(self, obj):
+        answer = TreasureAnswer.objects.last().text
+        return answer
 
 
 class TreasureSerializer(serializers.ModelSerializer):

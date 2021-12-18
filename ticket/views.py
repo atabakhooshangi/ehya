@@ -105,10 +105,10 @@ class TicketGetAPIView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
             return Ticket.objects.all() if self.request.META['HTTP_FILTER'] == 'all' else Ticket.objects.filter(
-                status=self.request.META['HTTP_FILTER'])
+                status_for_expert=self.request.META['HTTP_FILTER'])
         return Ticket.objects.filter(user=self.request.user) \
             if self.request.META['HTTP_FILTER'] == 'all' else Ticket.objects.filter(user=self.request.user,
-                                                                                    status=self.request.META[
+                                                                                    status_for_user=self.request.META[
                                                                                         'HTTP_FILTER'])
 
 
