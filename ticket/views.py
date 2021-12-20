@@ -141,9 +141,62 @@ def seen_by_user(request):
     if request.method == 'POST':
         ticket = get_object_or_404(Ticket, id=request.META['HTTP_ID'])
         if request.user == ticket.user:
-            answers = ticket.answer_set.filter(user__answer=request.user)
+            answers = ticket.answer_set.filter(status='2')
             for answer in answers:
                 answer.status = '1'
                 answer.seen_at = datetime.datetime.now()
                 answer.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
+
+
+@api_view(['GET'])
+@renderer_classes([Renderer])
+@permission_classes([IsAuthenticated])
+def status_api(request):
+    if request.method == 'GET':
+        if request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
+            data = {
+                '1': 'جدید',
+                '2': 'ارجاء به کارشناس ارشد',
+                '3': 'پاسخ داده شده',
+                '4': 'بسته شده',
+                '5': 'پاسخ کاربر',
+            }
+            return Response(data, status=HTTP_200_OK)
+
+        data = {
+            '1': 'در حال بررسی',
+            '2': 'پاسخ داده شده',
+            '3': 'بسته شده'
+        }
+        return Response(data, status=HTTP_200_OK)
+
+
+@api_view(['GET'])
+@renderer_classes([Renderer])
+@permission_classes([IsAuthenticated])
+def ticket_count_api(request):
+    if request.method == 'GET':
+        if request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
+            new = Ticket.objects.filter(status_for_expert='1').count()
+            refrenced = Ticket.objects.filter(status_for_expert='2').count()
+            answered = Ticket.objects.filter(status_for_expert='3').count()
+            closed = Ticket.objects.filter(status_for_expert='4').count()
+            user_answer = Ticket.objects.filter(status_for_expert='5').count()
+            data = {
+                'جدید': new,
+                'ارجاء به کارشناس ارشد': refrenced,
+                'پاسخ داده شده': answered,
+                'بسته شده': closed,
+                'پاسخ کاربر': user_answer,
+            }
+            return Response(data, status=HTTP_200_OK)
+        in_progress = Ticket.objects.filter(user=request.user, status_for_user='1').count()
+        answered = Ticket.objects.filter(user=request.user, status_for_user='2').count()
+        closed = Ticket.objects.filter(user=request.user, status_for_user='3').count()
+        data = {
+            'در حال بررسی': in_progress,
+            'پاسخ داده شده': answered,
+            'بسته شده': closed
+        }
+        return Response(data, status=HTTP_200_OK)

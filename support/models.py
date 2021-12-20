@@ -5,12 +5,31 @@ from accounts.models import Role
 
 User = get_user_model()
 
-STATUS_CHOICES = (
+# STATUS_CHOICES = (
+#     ('1', 'جدید'),
+#     ('2', 'در حال بررسی'),
+#     ('3', 'پاسخ داده شده'),
+#     ('4', 'پاسخ کاربر'),
+#     ('5', 'بسته شده')
+# )
+
+USER_STATUS_CHOICES = (
+    ('1', 'در حال بررسی'),
+    ('2', 'پاسخ داده شده'),
+    ('3', 'بسته شده'),
+)
+
+SUPPORT_STATUS_CHOICES = (
     ('1', 'جدید'),
-    ('2', 'در حال بررسی'),
-    ('3', 'پاسخ داده شده'),
+    ('2', 'پاسخ داده شده'),
+    ('3', 'بسته شده'),
     ('4', 'پاسخ کاربر'),
-    ('5', 'بسته شده')
+
+)
+
+ANSWER_CHOICES = (
+    ('1', 'دیده شده'),
+    ('2', 'دیده نشده'),
 )
 
 
@@ -35,7 +54,11 @@ class SupportTicket(models.Model):
                                 null=False,
                                 blank=False)
     request_text = models.TextField(_('متن درخواست'), null=False, blank=True)
-    status = models.CharField(choices=STATUS_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=1)
+    status_for_user = models.CharField(choices=USER_STATUS_CHOICES, verbose_name=_('وضعیت برای کاربر'), max_length=1,
+                                       default=1)
+    status_for_support = models.CharField(choices=SUPPORT_STATUS_CHOICES, verbose_name=_('وضعیت برای پشتیبان'),
+                                          max_length=1,
+                                          default=1)
     created_at = models.DateTimeField(verbose_name=_('تاریخ ایجاد'), auto_now_add=True)
 
     class Meta:
@@ -52,6 +75,8 @@ class SupportAnswer(models.Model):
     ticket = models.ForeignKey(to=SupportTicket, on_delete=models.DO_NOTHING, verbose_name=_('تیکت پشتیبانی'),
                                null=False, blank=False)
     text = models.TextField(_('متن پاسخ'))
+    status = models.CharField(choices=ANSWER_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=2)
+    seen_at = models.DateTimeField(verbose_name=_('تاریخ دیده شدن'), null=True, blank=True)
     created_at = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
 
     class Meta:

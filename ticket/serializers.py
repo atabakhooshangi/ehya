@@ -125,6 +125,7 @@ class TicketGetSerializer(serializers.ModelSerializer):
     answers = serializers.SerializerMethodField(read_only=True)
     status_for_user = serializers.SerializerMethodField()
     status_for_expert = serializers.SerializerMethodField()
+    user_seen = serializers.SerializerMethodField(read_only=True)
     section = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
 
@@ -138,12 +139,22 @@ class TicketGetSerializer(serializers.ModelSerializer):
             'file',
             'status_for_user',
             'status_for_expert',
+            'user_seen',
             'created_at',
             'answers'
         ]
 
     def get_answers(self, obj):
         return AnswerGetSerializer(obj.answer_set.all(), many=True, context={'ticket_user': obj.user.id}).data
+
+    def get_user_seen(self, obj):
+        seen = True
+        answers = obj.answer_set.all()
+        if answers:
+            for answer in answers:
+                if answer.status == '2' and answer.user != obj.user:
+                    seen = False
+        return seen
 
     def get_section(self, obj):
         return obj.section.name
@@ -162,5 +173,3 @@ class SectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Section
         fields = ['id', 'name']
-
-

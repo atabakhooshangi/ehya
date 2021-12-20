@@ -10,15 +10,15 @@ class SupportAnswerInLine(admin.TabularInline):
     extra = 0
     autocomplete_fields = ['user']
     readonly_fields = ['user']
-    fields = ['text', 'user']
+    fields = ['text', 'user', 'status']
 
 
 @admin.register(SupportTicket)
 class SupportTicketAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'section', 'topic', 'status', 'get_created_jalali', ]
+    list_display = ['id', 'user', 'section', 'topic', 'status_for_user', 'status_for_support', 'get_created_jalali', ]
     autocomplete_fields = ['user']
-    list_editable = ['section', 'status']
-    list_filter = ['user', 'status', 'created_at']
+    list_editable = ['section', 'status_for_user', 'status_for_support']
+    list_filter = ['user', 'status_for_user', 'status_for_support', 'created_at']
     search_fields = ['topic', 'user__phone_number']
     raw_id_fields = ['user']
     inlines = [SupportAnswerInLine]
@@ -28,7 +28,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
             'fields': ('topic',)
         }),
         ('مشخصات کلی', {
-            'fields': ('user', ('request_text', 'status'))
+            'fields': ('user', ('request_text', 'status_for_user', 'status_for_support'))
         })]
 
     def save_formset(self, request, form, formset, change):

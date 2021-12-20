@@ -14,10 +14,11 @@ from .models import SupportTicket, SupportAnswer, SupportSection
 class SupportAnswerGetSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportAnswer
-        fields = ['user', 'ticket', 'text', 'created_at']
+        fields = ['user', 'ticket', 'text', 'status', 'created_at']
 
     def get_user(self, obj):
         ticket_user = self.context.get("ticket_user")
@@ -25,23 +26,19 @@ class SupportAnswerGetSerializer(serializers.ModelSerializer):
             return 'کاربر'
         return 'پشتیبان'
 
+    def get_status(self, obj):
+        return obj.get_status_display()
+
     def get_created_at(self, obj):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')
 
 
 class SupportTicketSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField(read_only=True)
     section = serializers.CharField(max_length=20)
 
     class Meta:
         model = SupportTicket
-        fields = ['id', 'topic', 'section', 'request_text', 'status', 'created_at']
-
-    def get_status(self, obj):
-        request = self.context.get("request")
-        if request.method == 'GET':
-            return obj.get_status_display()
-        return None
+        fields = ['id', 'topic', 'section', 'request_text', 'created_at']
 
     def validate(self, attrs):
         user = None
@@ -62,20 +59,39 @@ class SupportTicketSerializer(serializers.ModelSerializer):
 
 
 class GetSupportTicketSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField(read_only=True)
+    status_for_user = serializers.SerializerMethodField(read_only=True)
+    status_for_support = serializers.SerializerMethodField(read_only=True)
+    user_seen = serializers.SerializerMethodField(read_only=True)
     answers = serializers.SerializerMethodField(read_only=True)
     section = serializers.CharField(max_length=20)
     created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = SupportTicket
-        fields = ['id', 'topic', 'section', 'request_text', 'status', 'created_at', 'answers']
+        fields = ['id', 'topic', 'section', 'request_text', 'status_for_user', 'status_for_support', 'user_seen',
+                  'created_at',
+                  'answers']
 
-    def get_status(self, obj):
+    def get_status_for_user(self, obj):
         request = self.context.get("request")
         if request.method == 'GET':
-            return obj.get_status_display()
+            return obj.get_status_for_user_display()
         return None
+
+    def get_status_for_support(self, obj):
+        request = self.context.get("request")
+        if request.method == 'GET':
+            return obj.get_status_for_support_display()
+        return None
+
+    def get_user_seen(self, obj):
+        seen = True
+        answers = obj.supportanswer_set.all()
+        if answers:
+            for answer in answers:
+                if answer.status == '2' and answer.user != obj.user:
+                    seen = False
+        return seen
 
     def get_answers(self, obj):
         return SupportAnswerGetSerializer(obj.supportanswer_set.all(), many=True,

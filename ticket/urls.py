@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import TicketAPIView, AnswerAPIView, RetrieveATicketAPIView, SectionListApiView, \
-    TicketGetAPIView, close_ticket, reference_to_senior_expert, seen_by_user
+    TicketGetAPIView, close_ticket, reference_to_senior_expert, seen_by_user, status_api, ticket_count_api
 
 app_name = 'Tickets'
 
@@ -14,4 +14,6 @@ urlpatterns = [
     path('get_tickets', TicketGetAPIView.as_view(), name='User-Tickets'),
     path('get_ticket', RetrieveATicketAPIView.as_view(), name='User-Tickets'),
     path('sections', SectionListApiView.as_view(), name='Sections'),
+    path('statuses', status_api, name='Statuses'),
+    path('ticket_count', ticket_count_api, name='Ticket-Count'),
 ]
