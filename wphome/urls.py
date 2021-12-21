@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import PostGetAPIView, RetrievePostAPIView, CreateCommentAPIView
 
-app_name = 'Home'
+app_name = 'Homes'
 
 urlpatterns = [
     path('get_posts', PostGetAPIView.as_view(), name='Posts'),

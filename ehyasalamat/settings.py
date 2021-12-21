@@ -45,14 +45,15 @@ INSTALLED_APPS = [
     'sms.apps.SmsConfig',
     'treasure.apps.TreasureConfig',
     'support.apps.SupportConfig',
-    # 'home.apps.HomeConfig',
+    'wphome.apps.WphomeConfig',
     'jalali_date',
     # swagger
     'drf_yasg',
     # api
     'rest_framework',
+
     'rangefilter',
-    # jwt
+
     # cors
     'corsheaders',
 ]
@@ -96,21 +97,12 @@ WSGI_APPLICATION = 'ehyasalamat.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASE_ROUTERS = ['home.db_router.WordPressRouter']
+
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    },
-    'word': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wp572',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
-
     }
 }
 
