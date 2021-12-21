@@ -12,7 +12,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = WpComments
         fields = [
-            'comment_id',
+            'id',
             'comment_post_id',
             'comment_author',
             'comment_author_email',
