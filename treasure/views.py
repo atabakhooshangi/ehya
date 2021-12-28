@@ -1,7 +1,7 @@
 # Internal imports
 from ticket.permissions import IsTreasureAdminOrSeniorAdmin
-from .models import Treasury
-from .serializers import TreasureSerializer, GetTreasureSerializer
+from .models import Treasury, TreasureAnswer
+from .serializers import TreasureSerializer, GetTreasureSerializer, TreasureAnswerSerializer
 from accounts.renderers import Renderer, SimpleRenderer
 
 # Django imports
@@ -57,3 +57,14 @@ class RetrieveTreasuresAPIView(generics.GenericAPIView):
         if self.request.user.role in ['مدیر کل', 'مدیر گنجینه'] or self.request.user == obj.user:
             return Response(serializer.data, HTTP_200_OK)
         return Response({'user': 'کاربر مجاز به انجام این عملیات نمیباشد'}, status=HTTP_403_FORBIDDEN)
+
+
+class GetTreasureAnswerAPIView(generics.GenericAPIView):
+    serializer_class = TreasureAnswerSerializer
+    permission_classes = [AllowAny]
+    renderer_classes = [Renderer]
+
+    def get(self, request, *args, **kwargs):
+        obj = TreasureAnswer.objects.last()
+        serializer = self.serializer_class(obj)
+        return Response(serializer.data, status=HTTP_200_OK)

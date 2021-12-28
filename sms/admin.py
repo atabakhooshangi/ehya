@@ -24,11 +24,23 @@ class SendSmsAdmin(admin.ModelAdmin):
         return obj.recipients.count()
 
     def has_add_permission(self, request):
-        if request.user.is_staff:
+        related_per = 'sms.add_sendsms'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        related_per = 'sms.change_sendsms'
+        if related_per in request.user.get_user_permissions():
             return True
 
     def has_view_permission(self, request, obj=None):
-        if request.user.is_staff:
+        related_per = 'sms.view_sendsms'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        related_per = 'sms.delete_sendsms'
+        if related_per in request.user.get_user_permissions():
             return True
 
     recep.short_description = 'تعداد گیرندگان'

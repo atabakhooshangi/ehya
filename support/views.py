@@ -32,6 +32,7 @@ class SupportTicketAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         data = self.request.data
         serializer = self.serializer_class(data=data, context={'request': self.request})
+        print(self.request.user.get_user_permissions())
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
 

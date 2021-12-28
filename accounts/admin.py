@@ -5,8 +5,8 @@ from sms.models import SendSMS
 from . import models
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext as _
-
-from jalali_date import datetime2jalali, date2jalali
+from rangefilter.filters import DateRangeFilter
+from jalali_date import datetime2jalali
 from django.contrib.sites.shortcuts import get_current_site
 
 
@@ -17,10 +17,10 @@ class RoleAdmin(admin.ModelAdmin):
 
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'phone_number', 'role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support'
-        , 'get_created_jalali']
+    list_display = ['id', 'phone_number', 'role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support',
+                    'get_created_jalali']
     list_editable = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support']
-    list_filter = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser']
+    list_filter = ['role', ('date_joined', DateRangeFilter), 'is_active', 'is_admin', 'is_staff', 'is_superuser']
     search_fields = ['phone_number', 'first_name']
 
     actions = ['select_users_for_sms']
@@ -28,7 +28,7 @@ class UserAdmin(admin.ModelAdmin):
     fieldsets = [
         ('اطلاعات تماس', {
             'fields': (
-                'phone_number', 'email','password')}),
+                'phone_number', 'email', 'password')}),
         ('مشخصات فردی', {
             'fields': (
                 'first_name', 'last_name', 'province', 'city', 'birthday', 'gender', 'degree',
@@ -80,9 +80,21 @@ class ProfileCompletionPointsAdmin(admin.ModelAdmin):
     list_editable = ['value']
 
     def has_add_permission(self, request):
+        related_per = 'accounts.add_profilecompletionpoints'
         if self.model.objects.count() >= 1:
             return False
-        return super().has_add_permission(request)
+        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        related_per = 'accounts.change_profilecompletionpoints'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_view_permission(self, request, obj=None):
+        related_per = 'accounts.view_profilecompletionpoints'
+        if related_per in request.user.get_user_permissions():
+            return True
 
 
 admin.site.unregister(Group)
