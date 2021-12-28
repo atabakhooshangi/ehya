@@ -48,9 +48,9 @@ class SupportSection(models.Model):
 
 
 class SupportTicket(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.DO_NOTHING, verbose_name=_('کاربر'), null=False, blank=False)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name=_('کاربر'), null=True, blank=True)
     topic = models.CharField(_('موضوع'), max_length=255, null=False, blank=False)
-    section = models.ForeignKey(to=SupportSection, on_delete=models.DO_NOTHING, verbose_name=_('بخش مربوطه'),
+    section = models.ForeignKey(to=SupportSection, on_delete=models.CASCADE, verbose_name=_('بخش مربوطه'),
                                 null=False,
                                 blank=False)
     request_text = models.TextField(_('متن درخواست'), null=False, blank=True)
@@ -71,8 +71,8 @@ class SupportTicket(models.Model):
 
 
 class SupportAnswer(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.DO_NOTHING, null=True, blank=True)
-    ticket = models.ForeignKey(to=SupportTicket, on_delete=models.DO_NOTHING, verbose_name=_('تیکت پشتیبانی'),
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=True, blank=True)
+    ticket = models.ForeignKey(to=SupportTicket, on_delete=models.CASCADE, verbose_name=_('تیکت پشتیبانی'),
                                null=False, blank=False)
     text = models.TextField(_('متن پاسخ'))
     status = models.CharField(choices=ANSWER_CHOICES, verbose_name=_('وضعیت'), max_length=1, default=2)
