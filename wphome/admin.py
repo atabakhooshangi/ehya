@@ -1,13 +1,61 @@
 from django.contrib import admin
-
-from .models import WpPosts, WpComments
-
-
-@admin.register(WpPosts)
-class WpPostsAdmin(admin.ModelAdmin):
-    list_display = ['id']
+from mptt.admin import MPTTModelAdmin
+from .models import Post, Category, Tag, Comment, CommentPoint
 
 
-@admin.register(WpComments)
-class WpCommentsAdmin(admin.ModelAdmin):
-    list_display = ['id']
+class CommentInLine(admin.TabularInline):
+    model = Comment
+    extra = 0
+    autocomplete_fields = ['user', 'related_post']
+    readonly_fields = ['date_created']
+    fields = ['text','user', 'parent', 'approved', 'date_created']
+
+    def has_add_permission(self, request, obj=None):
+        related_per = 'wphome.add_comment'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        related_per = 'wphome.change_comment'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_view_permission(self, request, obj=None):
+        related_per = 'wphome.view_comment'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_delete_permission(self, request, obj=None):
+        related_per = 'wphome.delete_comment'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title']
+    filter_horizontal = ['tags']
+    search_fields = ['user']
+    inlines = [CommentInLine]
+
+
+@admin.register(Category)
+class CategoryAdmin(MPTTModelAdmin):
+    list_display = ['id', 'name']
+    autocomplete_fields = ['parent']
+    search_fields = ['parent']
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']
+
+
+@admin.register(Comment)
+class CommentAdmin(MPTTModelAdmin):
+    list_display = ['id', 'user']
+
+
+@admin.register(CommentPoint)
+class CommentPointAdmin(admin.ModelAdmin):
+    list_display = ['id', 'value']

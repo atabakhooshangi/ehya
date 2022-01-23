@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'support.apps.SupportConfig',
     'wphome.apps.WphomeConfig',
     'jalali_date',
+    'fcm',
+    'mptt',
     # swagger
     'drf_yasg',
     # api
@@ -249,3 +251,5 @@ CELERY_TASK_SERIALIZER = 'json'
 # ]
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 9015165
+
+FCM_APIKEY = "AAAAAGu1Y9U:APA91bG02jabxP5bpUbh8penpC8HVOp9Y0PcKicrPAEz3akhcDdoAn73ZmVUzO3kaBz25eE8qtcR81TbETFrmOHAftc69DqYKfQ1neq1xLxhh-UL0mNf7tir85xfulrJnTNxx4HLePM4"

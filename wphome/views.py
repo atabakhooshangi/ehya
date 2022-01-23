@@ -1,74 +1,108 @@
 # Internal imports
 import json
-
-import requests
+from ticket.permissions import IsOwner
 from rest_framework.decorators import api_view, permission_classes
 
-from .models import WpPosts, WpComments
-# from .serializers import PostSerializer, CommentCreteSerializer
-
+from .serializers import CategorySerializer, SingleCategorySerializer, PostsListSerializer, CommentCreateSerializer, \
+    TagSerializer , PostsRetrieveSerializer
+from .models import Category, Post, Comment, Tag
 from accounts.renderers import Renderer, SimpleRenderer
 # Rest Framework imports
 from rest_framework import generics
 from rest_framework.generics import get_object_or_404, CreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_200_OK, HTTP_400_BAD_REQUEST
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_200_OK, HTTP_400_BAD_REQUEST, \
+    HTTP_204_NO_CONTENT
 from rest_framework.response import Response
 
 
-# class PostGetAPIView(generics.ListAPIView):
-#     serializer_class = PostSerializer
-#     renderer_classes = [Renderer]
-#     permission_classes = [AllowAny]
-#
-#     def get_queryset(self):
-#         return WpPosts.objects.all()
-#
-#
-# class RetrievePostAPIView(generics.GenericAPIView):
-#     permission_classes = [AllowAny]
-#     serializer_class = PostSerializer
-#     renderer_classes = [Renderer]
-#
-#     def get_object(self):
-#         return get_object_or_404(WpPosts, id=self.request.META['HTTP_ID'])
-#
-#     def get(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(self.get_object())
-#         return Response(serializer.data, status=HTTP_200_OK)
+class CategoryListAPIView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    renderer_classes = [Renderer]
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Category.objects.viewable()
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def post_list_api(request):
-    if request.method == 'GET':
-        page_num = request.META.get('HTTP_PAGE')
-        url = 'https://ravazadeh.com/wp-json/wp/v2/posts'
-        params = {'page': str(page_num)}
-        response = requests.get(url, params=params)
-        all_pages = response.headers.get('X-WP-TotalPages')
-        all_posts = response.headers.get('X-WP-Total')
-        res = json.loads(response.content)
-        return Response(res, status=HTTP_200_OK, headers={'total_pages': all_pages, 'total_posts': all_posts})
+class CategoryTreeRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = CategorySerializer
+    renderer_classes = [Renderer]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        categories = Category.objects.viewable()
+        filtered_categories = categories.filter(id=self.kwargs['pk'])
+        return filtered_categories
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def retrieve_post_api(request):
-    if request.method == 'GET':
-        post_id = request.META.get('HTTP_ID')
-        url = f'https://ravazadeh.com/wp-json/wp/v2/posts/{post_id}'
-        response = requests.get(url)
-        res = json.loads(response.content)
-        return Response(res, status=HTTP_200_OK)
+class CategoryRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = SingleCategorySerializer
+    renderer_classes = [Renderer]
+    permission_classes = [IsAuthenticated]
 
-# class CreateCommentAPIView(generics.CreateAPIView):
-#     serializer_class = CommentCreteSerializer
-#     permission_classes = [IsAuthenticated]
-#     renderer_classes = [SimpleRenderer]
-#
-#     def perform_create(self, serializer):
-#         serializer = self.serializer_class(data=self.request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save(user=self.request.user)
+    def get_queryset(self):
+        categories = Category.objects.viewable()
+        filtered_categories = categories.filter(id=self.kwargs['pk'])
+        return filtered_categories
+
+
+class PostsListView(generics.ListAPIView):
+    serializer_class = PostsListSerializer
+    renderer_classes = [Renderer]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        param = self.kwargs['id']
+        if param == 'all':
+            return Post.objects.filter(published=True)
+        return Post.objects.filter(category_id=self.kwargs['id'], published=True)
+
+
+class PostsSearchView(generics.ListAPIView):
+    serializer_class = PostsListSerializer
+    renderer_classes = [Renderer]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        param = self.request.query_params.get('q')
+        return Post.objects.search(param)
+
+
+class PostRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = PostsRetrieveSerializer
+    renderer_classes = [Renderer]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        print(self.kwargs['pk'])
+        return get_object_or_404(Post, id=self.kwargs['pk'], published=True)
+
+
+class CreateCommentAPIView(generics.GenericAPIView):
+    serializer_class = CommentCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response({'isDone': True}, status=HTTP_201_CREATED)
+
+
+class DeleteCommentAPIView(generics.DestroyAPIView):
+    serializer_class = CommentCreateSerializer
+    permission_classes = [IsAuthenticated, IsOwner]
+
+    def destroy(self, request, *args, **kwargs):
+        obj = get_object_or_404(Comment, id=kwargs['pk'])
+        self.check_object_permissions(request=self.request, obj=obj)
+        self.perform_destroy(obj)
+        return Response({'isDone': True}, status=HTTP_204_NO_CONTENT)
+
+
+class TagListAPIView(generics.ListAPIView):
+    serializer_class = TagSerializer
+    permission_classes = [AllowAny]
+    queryset = Tag.objects.all()

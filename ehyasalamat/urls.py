@@ -26,6 +26,7 @@ urlpatterns = [
     # path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/auth/', include('accounts.urls', namespace='Accounts')),
+    path('api/fcm/', include('fcm.urls')),
     path('api/ticket/', include('ticket.urls', namespace='Tickets')),
     path('api/informs/', include('informs.urls', namespace='Informs')),
     path('api/treasure/', include('treasure.urls', namespace='Treasure')),
