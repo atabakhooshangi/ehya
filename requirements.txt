@@ -16,3 +16,4 @@ django-admin-rangefilter
 django-jalali-date
 mysqlclient
 django-mptt
+django-fcm

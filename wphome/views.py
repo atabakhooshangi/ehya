@@ -1,10 +1,13 @@
 # Internal imports
 import json
+
+from rest_framework.pagination import PageNumberPagination
+
 from ticket.permissions import IsOwner
 from rest_framework.decorators import api_view, permission_classes
 
 from .serializers import CategorySerializer, SingleCategorySerializer, PostsListSerializer, CommentCreateSerializer, \
-    TagSerializer , PostsRetrieveSerializer
+    TagSerializer, PostsRetrieveSerializer
 from .models import Category, Post, Comment, Tag
 from accounts.renderers import Renderer, SimpleRenderer
 # Rest Framework imports
@@ -49,6 +52,8 @@ class CategoryRetrieveAPIView(generics.RetrieveAPIView):
 
 class PostsListView(generics.ListAPIView):
     serializer_class = PostsListSerializer
+    pagination_class = PageNumberPagination
+    pagination_class.page_size = 10
     renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
