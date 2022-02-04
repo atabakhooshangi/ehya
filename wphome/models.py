@@ -79,7 +79,7 @@ class Tag(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('عنوان'))
-    slug = models.SlugField(max_length=150, null=False, blank=False, unique=True)
+    slug = models.SlugField(max_length=150, null=False, blank=False)
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, null=False, blank=False,
                                  verbose_name=_('دسته بندی'))
     image = models.ImageField(upload_to=upload_image_location, verbose_name=_('تصویر پست'), null=True, blank=True)
