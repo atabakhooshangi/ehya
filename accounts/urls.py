@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import RegisterLoginAPIView, VerifyAuthenticationCodeAPIView, UserProfileAPIView, ReferralAPIView, \
-    GetRolesAPIView
+    GetRolesAPIView , five_minute_activity_point
 from rest_framework_simplejwt.views import TokenRefreshView
 
 app_name = 'Accounts'
@@ -12,5 +12,6 @@ urlpatterns = [
     path('user_profile', UserProfileAPIView.as_view(), name='User Profile'),
     path('referral', ReferralAPIView.as_view(), name='Referral'),
     path('roles', GetRolesAPIView.as_view(), name='Roles'),
+    path('activity_point', five_minute_activity_point, name='Activity-Point'),
 
 ]

@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from datetime import timedelta
 import locale
 from pathlib import Path
+import firebase_admin
+from decouple import config
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,9 +49,10 @@ INSTALLED_APPS = [
     'treasure.apps.TreasureConfig',
     'support.apps.SupportConfig',
     'wphome.apps.WphomeConfig',
+    'push_notification.apps.PushNotificationConfig',
     'jalali_date',
-    'fcm',
     'mptt',
+    "fcm_django",
     # swagger
     'drf_yasg',
     # api
@@ -73,7 +77,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ehyasalamat.urls'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 locale.setlocale(locale.LC_ALL, "fa_IR.UTF-8")
 
@@ -252,4 +258,23 @@ CELERY_TASK_SERIALIZER = 'json'
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 9015165
 
-FCM_APIKEY = "AAAAAGu1Y9U:APA91bG02jabxP5bpUbh8penpC8HVOp9Y0PcKicrPAEz3akhcDdoAn73ZmVUzO3kaBz25eE8qtcR81TbETFrmOHAftc69DqYKfQ1neq1xLxhh-UL0mNf7tir85xfulrJnTNxx4HLePM4"
+FCM_DJANGO_SETTINGS = {
+    "FCM_SERVER_KEY": "AAAAAGu1Y9U:APA91bG02jabxP5bpUbh8penpC8HVOp9Y0PcKicrPAEz3akhcDdoAn73ZmVUzO3kaBz25eE8qtcR81TbETFrmOHAftc69DqYKfQ1neq1xLxhh-UL0mNf7tir85xfulrJnTNxx4HLePM4",
+    "ONE_DEVICE_PER_USER": False,
+    "DELETE_INACTIVE_DEVICES": False,
+}
+cert = {
+    "type": "service_account",
+    "project_id": "nephalemapp-56712",
+    "private_key_id": "9d5e31ffbe7208709cc47ee346702a657f847bae",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC6FRUDR3QTKtaR\nbyQNLMmgeHzcCDmuT6bzauX9Z0y4p2iWhj65EDNDdsdhDgg4wV+DsbaRnRizkmGM\nGJ/j7Cj44PwyuTzQ/n8crIw1qO2i0RxMmaVLzaYMyczU40dDZEBaxog13uCrosWO\nYVdHf+1C2RoBuOrkw9TI7drAORXApa8k+mfITZd31fEbOx98ilFN/9LsIAWChDpY\nNq0d3jtWKOPpgLI+As+QL4qN8kCMbTncPQ8GviLvbjrkPwtbHZJ0aJajvfmZ9jjj\nqsuVw6AauBm4QBifJvQx+mqDqRx6JZqnvhQNb3WxGdCJ/+CB7FFT1100ArLKEZag\n9/KCOZ7rAgMBAAECggEARVY9si8ZzVqVATQMluwtZSIARGy8MXt0lhcrA7VOHTAk\nBJKZJJQoxeaofD2iSqOjV4sMoE2NOrw8pNs4GNGSosoSr0PeqXFrI+AXjpcXlSee\nB9zofspuKS24qUrW7wGYCTsY3hniVZIdUuRqhTXhzpre2e1xeTSPQR9/90hOFq4C\nm9x4gV3Gw05omaKKoPEg/9JkhWiahMCmyU512cF1KJBz4fumykWQ1BWWKo1lKxdO\npcMwx/Nour9BiakZV36IZMxjkZdL2vGmvdcWquYXQ+qn3LTkVQpsEW1ZXBf0xVNn\nyiBcPo0o5lGRVOEP0Bu9CZWfIVkrU/iSsUQ4Qxq1gQKBgQDwk9WqgePjQDFVd0f+\nUVJqmAwRsRtLjpJ/m3gq4coVOxXT9BHhivxbTR6FoxSjVh9tX/cynLQszxq9lijZ\nsamsPTdSYswxaK8OzddPCa3qwqaDj92W0FHCBoobc4enoBAUYYCJ1rOBB7ljpmiN\nYipB6DLU5d5qNDiL04TadeuLmwKBgQDGAuq+DXG2OAITxw53jk7m6RMd8jYVBE6I\nGpOphgN4kQPAjefTR2v7pVTtRA+6DovszfBVUMsY0vXO+wgy6eeilb4oOMeKXCjU\nS8ZFuFuhMfk51AzJEtGpeF7go4LGBTsrI2SDOPEh3uYnIQohK3ZGjF1H8voCFZOI\nFB4p9eG28QKBgQDZtT7XVUIQBahfalk5OQh3M+9AF2DXCEdkuSGO1NNWUSjYrPd9\nfpQOX4SudL0Zbrdz+DMwlwSpxCWzyW5gSll8Z81nfcbBM7WvlPEyMlUzrECZsBhc\nAVrrVZWnb+4j8EJ83xs+IZBBxOas2gulXl9VUzak2Pxkaat+RcTlGW813wKBgQCS\nN1E0KiVP0yflhtXt/s3QwUd2k4bQGjALXOSxB97ERwEoTSFk6Jaaakm+MsYSM++r\nW58ewNxYZl9RChnRzttXOZADj3n5d3hG2/V7QlmXPJm21Bjk2dqsc9BLvTIyG2bH\nwgjUxVV6F2iIeGNMfxWFnty65ncq1tfsYj6r6X9VYQKBgQC3g2ZI0HQynjJf3em/\nr0CvtRQw31hSOvTHk/Jpgh1So8kh+GcUQu1lhxE9ojmuitzwnqjaSzpNxSEN9IJR\nHa5aaYRVOeTBivq3ldBnRKjnsLzsVSUAksz4oIlysauddjYKYoBeBlW9JdYWIRXa\nVcsUBaoLXizu8pmJ8wHEWMp0Aw==\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-6uram@nephalemapp-56712.iam.gserviceaccount.com",
+    "client_id": "102698689366543959734",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-6uram%40nephalemapp-56712.iam.gserviceaccount.com"
+}
+
+cred = credentials.Certificate(cert=cert)
+firebase_admin.initialize_app(cred)

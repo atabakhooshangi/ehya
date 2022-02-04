@@ -6,6 +6,11 @@ from django.conf.urls.static import static
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from fcm_django.api.rest_framework import FCMDeviceViewSet, FCMDeviceAuthorizedViewSet
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'devices', FCMDeviceViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,7 +31,7 @@ urlpatterns = [
     # path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/auth/', include('accounts.urls', namespace='Accounts')),
-    path('api/fcm/', include('fcm.urls')),
+    path('api/fcm/', include(router.urls)),
     path('api/ticket/', include('ticket.urls', namespace='Tickets')),
     path('api/informs/', include('informs.urls', namespace='Informs')),
     path('api/treasure/', include('treasure.urls', namespace='Treasure')),

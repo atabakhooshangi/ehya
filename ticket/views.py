@@ -1,6 +1,7 @@
 # Internal imports
 import datetime
 
+from push_notification.main import PushThread
 from .models import Ticket, TicketPointCost, Section
 from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer
 from .permissions import is_expert, IsOwner, IsExpert, IsExpertOrIsOwner
@@ -54,6 +55,9 @@ class AnswerAPIView(generics.GenericAPIView):
             else:
                 ticket_obj.status_for_user = '2'
                 ticket_obj.status_for_expert = '3'
+                user = User.objects.filter(id=ticket_obj.user.id)
+                PushThread(section='ticket', title=ticket_obj.topic, body=data.get('text'),
+                           push_type='personal', user=user).start()
             ticket_obj.save()
             serializer.save(user=self.request.user)
             return Response({'isDone': True}, status=HTTP_201_CREATED)

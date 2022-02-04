@@ -139,3 +139,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = _('کاربر')
         verbose_name_plural = _('کاربرها')
         ordering = ('date_joined',)
+
+
+class ActivityPoint(models.Model):
+    value = models.PositiveIntegerField(default=5, verbose_name=_('مقدار'), null=False, blank=False,
+                                        help_text=_('مقدار امتیاز اهدایی جهت استفاده بیش از 5 دقیقه از اپلیکیشن'))
+
+    class Meta:
+        verbose_name = _('امتیاز فعالیت')
+        verbose_name_plural = _('امتیاز فعالیت')

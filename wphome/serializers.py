@@ -33,6 +33,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return datetime2jalali(obj.date_created).strftime('%y/%m/%d _ %H:%M:%S')
 
 
+
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment

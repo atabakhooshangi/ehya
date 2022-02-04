@@ -29,6 +29,7 @@ class Inform(models.Model):
     topic = models.CharField(_('موضوع'), max_length=200, null=False, blank=False)
     text = models.TextField(_('متن اطلاعیه'), null=False, blank=False)
     classification = models.CharField(_('طبقه بندی'), max_length=15, choices=CLASSIFICATION_CHOICES, default=1)
+    # send_notif = models.BooleanField(default=True,verbose_name=_('ارسال نوتیفیکیشن'))
     created_at = models.DateTimeField(_('تاریخ اعلان'), auto_now_add=True)
 
     class Meta:

@@ -97,4 +97,27 @@ class ProfileCompletionPointsAdmin(admin.ModelAdmin):
             return True
 
 
+@admin.register(models.ActivityPoint)
+class ActivityPointsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'value']
+    list_editable = ['value']
+
+    def has_add_permission(self, request):
+        related_per = 'accounts.add_activitypoint'
+        if self.model.objects.count() >= 1:
+            return False
+        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        related_per = 'accounts.add_activitypoint'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+    def has_view_permission(self, request, obj=None):
+        related_per = 'accounts.add_activitypoint'
+        if related_per in request.user.get_user_permissions():
+            return True
+
+
 admin.site.unregister(Group)

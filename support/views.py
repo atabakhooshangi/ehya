@@ -1,6 +1,7 @@
 # Internal imports
 import datetime
 
+from push_notification.main import PushThread
 from .models import SupportTicket, SupportSection
 from .serializers import SupportTicketSerializer, GetSupportTicketSerializer, SupportAnswerSerializer, \
     SupportSectionSerializer
@@ -68,6 +69,9 @@ class SupportAnswerAPIView(generics.GenericAPIView):
             else:
                 supp_ticket_obj.status_for_user = '2'
                 supp_ticket_obj.status_for_support = '2'
+                user = User.objects.filter(id=supp_ticket_obj.user.id)
+                PushThread(section='support', title=supp_ticket_obj.topic, body=data.get('text'),
+                           push_type='personal', user=user).start()
             supp_ticket_obj.save()
             serializer.save(user=self.request.user)
             return Response({'isDone': True}, status=HTTP_201_CREATED)

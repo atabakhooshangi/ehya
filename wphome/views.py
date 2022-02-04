@@ -2,7 +2,7 @@
 import json
 
 from rest_framework.pagination import PageNumberPagination
-
+from mptt.utils import tree_item_iterator
 from ticket.permissions import IsOwner
 from rest_framework.decorators import api_view, permission_classes
 
@@ -59,6 +59,11 @@ class PostsListView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.kwargs['id']
+        post = Post.objects.get(category_id=self.kwargs['id'], published=True)
+        print(post)
+        comments = post.comment_set.all()
+        print(comments)
+        print(len(list(tree_item_iterator(comments))))
         if param == 'all':
             return Post.objects.filter(published=True)
         return Post.objects.filter(category_id=self.kwargs['id'], published=True)

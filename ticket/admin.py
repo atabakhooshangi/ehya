@@ -1,9 +1,12 @@
 from django.contrib import admin
+
+from accounts.models import User
 from . import models
 from jalali_date import datetime2jalali, date2jalali
 # from jet.filters import RelatedFieldAjaxListFilter
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from django.utils.html import format_html
+from push_notification.main import PushThread
 
 
 class AnswerInLine(admin.TabularInline):
@@ -77,10 +80,16 @@ class TicketAdmin(admin.ModelAdmin):
     inlines = [AnswerInLine]
 
     def save_formset(self, request, form, formset, change):
+        user = form.cleaned_data['user']
         instances = formset.save(commit=False)
+        user = User.objects.filter(id=user.id)
         for instance in instances:
             instance.user = request.user
             instance.save()
+            PushThread(section='ticket', title=instance.ticket.topic, body=instance.text,
+                       push_type='personal', user=user).start()
+        for obj in formset.deleted_objects:
+            obj.delete()
         formset.save_m2m()
 
 

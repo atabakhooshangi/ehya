@@ -1,4 +1,7 @@
 from django.contrib import admin
+
+from accounts.models import User
+from push_notification.main import PushThread
 from .models import SupportTicket, SupportAnswer, SupportSection, SupportTicketAnswerLimit
 from jalali_date import datetime2jalali, date2jalali
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
@@ -9,7 +12,7 @@ class SupportAnswerInLine(admin.TabularInline):
     model = SupportAnswer
     extra = 0
     autocomplete_fields = ['user']
-    readonly_fields = ['user']
+    # readonly_fields = ['user']
     fields = ['text', 'user', 'status']
 
     def has_add_permission(self, request, obj=None):
@@ -48,14 +51,20 @@ class SupportTicketAdmin(admin.ModelAdmin):
             'fields': ('topic',)
         }),
         ('مشخصات کلی', {
-            'fields': ('user', ('request_text', 'status_for_user', 'status_for_support'))
+            'fields': ('user', 'section', ('request_text', 'status_for_user', 'status_for_support'))
         })]
 
     def save_formset(self, request, form, formset, change):
+        user = form.cleaned_data['user']
         instances = formset.save(commit=False)
+        user = User.objects.filter(id=user.id)
         for instance in instances:
             instance.user = request.user
             instance.save()
+            PushThread(section='support', title=instance.ticket.topic, body=instance.text,
+                       push_type='personal', user=user).start()
+        for obj in formset.deleted_objects:
+            obj.delete()
         formset.save_m2m()
 
     def get_created_jalali(self, obj):
