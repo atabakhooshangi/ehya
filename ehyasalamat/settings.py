@@ -259,21 +259,21 @@ CELERY_TASK_SERIALIZER = 'json'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 9015165
 
 FCM_DJANGO_SETTINGS = {
-    "FCM_SERVER_KEY": "AAAAAGu1Y9U:APA91bG02jabxP5bpUbh8penpC8HVOp9Y0PcKicrPAEz3akhcDdoAn73ZmVUzO3kaBz25eE8qtcR81TbETFrmOHAftc69DqYKfQ1neq1xLxhh-UL0mNf7tir85xfulrJnTNxx4HLePM4",
+    "FCM_SERVER_KEY": "AAAAb0PN1lM:APA91bGGutURh6gKb_0cXHlAm2tbwOh5p8I5u54BJrysROarQQz7Cs0FoIoKtUSgr3qmZpOHgNFUMYZngl_KLbkBqV6wB-CprVSCl1x2llqUNatBUUweu3zHUCaVuKVsI9CU7XsCW4I8",
     "ONE_DEVICE_PER_USER": False,
     "DELETE_INACTIVE_DEVICES": False,
 }
 cert = {
-    "type": "service_account",
-    "project_id": "nephalemapp-56712",
-    "private_key_id": "9d5e31ffbe7208709cc47ee346702a657f847bae",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC6FRUDR3QTKtaR\nbyQNLMmgeHzcCDmuT6bzauX9Z0y4p2iWhj65EDNDdsdhDgg4wV+DsbaRnRizkmGM\nGJ/j7Cj44PwyuTzQ/n8crIw1qO2i0RxMmaVLzaYMyczU40dDZEBaxog13uCrosWO\nYVdHf+1C2RoBuOrkw9TI7drAORXApa8k+mfITZd31fEbOx98ilFN/9LsIAWChDpY\nNq0d3jtWKOPpgLI+As+QL4qN8kCMbTncPQ8GviLvbjrkPwtbHZJ0aJajvfmZ9jjj\nqsuVw6AauBm4QBifJvQx+mqDqRx6JZqnvhQNb3WxGdCJ/+CB7FFT1100ArLKEZag\n9/KCOZ7rAgMBAAECggEARVY9si8ZzVqVATQMluwtZSIARGy8MXt0lhcrA7VOHTAk\nBJKZJJQoxeaofD2iSqOjV4sMoE2NOrw8pNs4GNGSosoSr0PeqXFrI+AXjpcXlSee\nB9zofspuKS24qUrW7wGYCTsY3hniVZIdUuRqhTXhzpre2e1xeTSPQR9/90hOFq4C\nm9x4gV3Gw05omaKKoPEg/9JkhWiahMCmyU512cF1KJBz4fumykWQ1BWWKo1lKxdO\npcMwx/Nour9BiakZV36IZMxjkZdL2vGmvdcWquYXQ+qn3LTkVQpsEW1ZXBf0xVNn\nyiBcPo0o5lGRVOEP0Bu9CZWfIVkrU/iSsUQ4Qxq1gQKBgQDwk9WqgePjQDFVd0f+\nUVJqmAwRsRtLjpJ/m3gq4coVOxXT9BHhivxbTR6FoxSjVh9tX/cynLQszxq9lijZ\nsamsPTdSYswxaK8OzddPCa3qwqaDj92W0FHCBoobc4enoBAUYYCJ1rOBB7ljpmiN\nYipB6DLU5d5qNDiL04TadeuLmwKBgQDGAuq+DXG2OAITxw53jk7m6RMd8jYVBE6I\nGpOphgN4kQPAjefTR2v7pVTtRA+6DovszfBVUMsY0vXO+wgy6eeilb4oOMeKXCjU\nS8ZFuFuhMfk51AzJEtGpeF7go4LGBTsrI2SDOPEh3uYnIQohK3ZGjF1H8voCFZOI\nFB4p9eG28QKBgQDZtT7XVUIQBahfalk5OQh3M+9AF2DXCEdkuSGO1NNWUSjYrPd9\nfpQOX4SudL0Zbrdz+DMwlwSpxCWzyW5gSll8Z81nfcbBM7WvlPEyMlUzrECZsBhc\nAVrrVZWnb+4j8EJ83xs+IZBBxOas2gulXl9VUzak2Pxkaat+RcTlGW813wKBgQCS\nN1E0KiVP0yflhtXt/s3QwUd2k4bQGjALXOSxB97ERwEoTSFk6Jaaakm+MsYSM++r\nW58ewNxYZl9RChnRzttXOZADj3n5d3hG2/V7QlmXPJm21Bjk2dqsc9BLvTIyG2bH\nwgjUxVV6F2iIeGNMfxWFnty65ncq1tfsYj6r6X9VYQKBgQC3g2ZI0HQynjJf3em/\nr0CvtRQw31hSOvTHk/Jpgh1So8kh+GcUQu1lhxE9ojmuitzwnqjaSzpNxSEN9IJR\nHa5aaYRVOeTBivq3ldBnRKjnsLzsVSUAksz4oIlysauddjYKYoBeBlW9JdYWIRXa\nVcsUBaoLXizu8pmJ8wHEWMp0Aw==\n-----END PRIVATE KEY-----\n",
-    "client_email": "firebase-adminsdk-6uram@nephalemapp-56712.iam.gserviceaccount.com",
-    "client_id": "102698689366543959734",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-6uram%40nephalemapp-56712.iam.gserviceaccount.com"
+  "type": "service_account",
+  "project_id": "ehya-app",
+  "private_key_id": "e68d85646143f9d0f222cf30dd25d7b271d5fe59",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC/s01UDrTqoIQP\nkFQeVWb15Ak+XuWyUi/u9iFVezQ+lsOky0XZEGfz3jN8YbBZPeGs2McfuEFbp4es\nW65Dmetm3zIohdWP/8Xg07hCYTOWP9QQZkq2KDVLjohatRFVglJ02MlgBHbLq1re\no/tX+2TYgEFQ0/UQ5K2xXouy6GFHYgaUkVqa4c+/A0Pt4DjPiKgsfuK9V1XvAudZ\nItSW5xeNkt9ZiWb6+UzJIfg2zatx/HJcmUpeGiFBaCilP6XrSZEBm9Jpn1k2H0po\nnk0pso/OOQYa8mBvVxVzi9n/cQDYksarwAu6yqlNGQIJPjdibrXQ7pCSbP8u5u5x\norqwHDt3AgMBAAECggEAO94QMUcigv+8HmwxiQOc0v/zTxIt4+G87IDbaim+6CkH\nUojU+HQiMsvbAmYzv7sOpn9QuHw/lRMd0NsU8jG4jXj43iTlzEHRl2QncDuQ88Rd\nQv3fKUInWsBZnxJbJnw7qhgl06GxQ+vwxgUqMpDlLqPnQgnfx/XStMjVEft2nebZ\nybW4In/aL3PtkSq79MtlubX8kbQFh+9L5+Czcyx//56ZG6ItxdBVsvV9/tVVTRKR\n51gLNxuK8Qr4TrgtMSzTGOJcUBOFXRcAMKXDdtFAvzg+QsJyKE7a0tvJCbJHn+l4\nhx5DCbqIJnQo96ozkAb9k0P4eNdYKVEr49XhCgJpQQKBgQDhZsz1fAEyrejpTTUa\nf00x/aFQV7Vf8eCbYOHBh12fk+F3Mer68tGLE6xqoGhiHA5q5+zkj3GLtI+718lc\nJQCoiYrwTigMVHZamGLxrP4kl99gsT0oDnebMM1zh7DtpmcnBhnuRMUeeyyRjbHQ\nsP9aOtKf81i7eD5u3DkQvs4bFwKBgQDZuU/ZFDiF9fjITvzhmxNKyqsC4oEpgnIc\npmg7k1I+cymi9tWTsdL75F/DyvZge5fDHQsgNhCP46bQa3Gcf2bvrV564uUKG0Eh\nP8pvLgu9/xcZD7EhlFsBHMZIFHiGirNN40cz8BrB2um1F0H2q0yXNWDf3PVOrLkE\nzj08uYOeoQKBgAQaY/bACCGNCuVcU3AlCxmy3UHiJtoVRBpv/AwS08B456zMytNA\nolHezM+wFdZbXmPRzv0mI1IAunEX74Fu5wEqZ84SDiaTTwg9J+fwVzwBS76t20gk\nY0b+725/9NeOpOgP817j/5abdWc85hS/dBaHZZglzOK0wKYx+hP09TmHAoGAdL5l\n70tlZ4dV5+patIoXlSIJApn7kgttLqmX+GHtVqkfqU9bhD90lzaElxLMez2qSafY\nIGR9CvqRpu4F1FmIE3pNz+y7zWiBytdOr8Dr8OvIMdr1KsFG7tjEBUBcxB+5N0lo\nE5RqdInyiPS4nRCLGAU6Na9gJdh9uPLxaQ88YSECgYAQV2PvadKjPGY4K1l09jAf\nH02Y41vXq4OL5VMr2yrQpgpHR1KkDvNz+1KxulrRh14bdqwtnQkcEYLZmkma4Olb\nLZ1b0U5sAarsRz1EC3UTlsLRaw5H+BEMovUfHWSj8zXk8sb1DUOIU87b9Je1BSFY\nrreRikGUczA47npplO/ldQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-831bg@ehya-app.iam.gserviceaccount.com",
+  "client_id": "116012305890151515526",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-831bg%40ehya-app.iam.gserviceaccount.com"
 }
 
 cred = credentials.Certificate(cert=cert)
