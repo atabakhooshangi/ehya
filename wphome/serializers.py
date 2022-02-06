@@ -33,7 +33,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return datetime2jalali(obj.date_created).strftime('%y/%m/%d _ %H:%M:%S')
 
 
-
 class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -69,7 +68,7 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'category', 'image', 'file', 'short_description', 'tags', 'link_tv', 'radio_ehya',
-                  'ehya_tv', 'published', 'comments', 'date_published')
+                  'ehya_tv', 'published', 'special_post', 'comments', 'date_published')
 
     def get_tags(self, obj):
         return TagSerializer(obj.tags.all(), many=True).data
