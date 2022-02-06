@@ -88,7 +88,7 @@ class PostsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'category', 'image', 'file', 'short_description', 'tags', 'link_tv', 'radio_ehya',
-                  'ehya_tv', 'published', 'date_published')
+                  'ehya_tv', 'published', 'special_post', 'date_published')
 
     def get_tags(self, obj):
         return TagSerializer(obj.tags.all(), many=True).data
