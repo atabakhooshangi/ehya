@@ -7,7 +7,6 @@ class PushNotificationSections(models.Model):
     inform = models.BooleanField(default=True, verbose_name=_('اعلانات'))
     support = models.BooleanField(default=True, verbose_name=_('پشتیبانی'))
     ticket = models.BooleanField(default=True, verbose_name=_('پرس و پاسخ'))
-    treasure = models.BooleanField(default=True, verbose_name=_('گنجینه'))
 
     class Meta:
         verbose_name = _('بخش های پوش نتیفیکیشن')

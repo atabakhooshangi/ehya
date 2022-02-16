@@ -64,11 +64,18 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
     category = serializers.CharField()
     date_published = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
+    liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'category', 'image', 'file', 'short_description', 'tags', 'link_tv', 'radio_ehya',
-                  'ehya_tv', 'published', 'special_post', 'comments', 'date_published')
+        fields = (
+            'id', 'title', 'category', 'image', 'file', 'share_link', 'liked', 'short_description', 'tags', 'link_tv',
+            'radio_ehya', 'ehya_tv', 'special_post', 'published', 'special_post', 'comments', 'date_published')
+
+    def get_liked(self, obj):
+        if self.context.get('user') in obj.likes.all():
+            return True
+        return False
 
     def get_tags(self, obj):
         return TagSerializer(obj.tags.all(), many=True).data
@@ -84,11 +91,22 @@ class PostsListSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     category = serializers.CharField()
     date_published = serializers.SerializerMethodField()
+    liked = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'category', 'image', 'file', 'short_description', 'tags', 'link_tv', 'radio_ehya',
-                  'ehya_tv', 'published', 'special_post', 'date_published')
+        fields = (
+            'id', 'title', 'category', 'image', 'file', 'share_link', 'liked', 'likes_count', 'short_description',
+            'tags', 'link_tv', 'radio_ehya', 'special_post', 'ehya_tv', 'published', 'special_post', 'date_published')
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_liked(self, obj):
+        if self.context.get('user') in obj.likes.all():
+            return True
+        return False
 
     def get_tags(self, obj):
         return TagSerializer(obj.tags.all(), many=True).data

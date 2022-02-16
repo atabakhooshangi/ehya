@@ -110,7 +110,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         fields = ['first_name', 'last_name', 'province', 'city', 'birthday', 'gender', 'degree', 'field_of_study',
                   'job']
         for field_name in fields:
-            if getattr(self, field_name) is "" or None:
+            if getattr(self, field_name) == "" or None:
                 return False
         return True
 

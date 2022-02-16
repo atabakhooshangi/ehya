@@ -71,3 +71,6 @@ class CommentAdmin(MPTTModelAdmin):
 @admin.register(CommentPoint)
 class CommentPointAdmin(admin.ModelAdmin):
     list_display = ['id', 'value']
+
+
+

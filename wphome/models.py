@@ -23,11 +23,7 @@ class PostManager(models.Manager):
 
 def upload_audo_file_location(instance, filename):
     extension = filename.split('.')[-1]
-    if len(Post.objects.all()) > 0:
-        post_id = Post.objects.last().id + 1
-    else:
-        post_id = 1
-    return f'uploads/radio_ehya/Post_radi_ehya_{post_id}.{extension}'
+    return f'uploads/radio_ehya/Post_radi_ehya_{instance.slug}.{extension}'
 
 
 def upload_image_location(instance, filename):
@@ -38,7 +34,7 @@ def upload_image_location(instance, filename):
 
 def upload_thumbnail_location(instance, filename):
     extension = filename.split('.')[-1]
-    # slug = instance.slug.replace('_', '-')
+    slug = instance.slug.replace('_', '-')
     return f'uploads/push_notif_thumbnails/Post_thumbnail_{instance.slug}.{extension}'
 
 
@@ -79,12 +75,14 @@ class Tag(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('عنوان'))
-    slug = models.SlugField(max_length=150, null=False, blank=False)
+    slug = models.SlugField(max_length=150, null=False, blank=False, unique=True)
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, null=False, blank=False,
                                  verbose_name=_('دسته بندی'))
     image = models.ImageField(upload_to=upload_image_location, verbose_name=_('تصویر پست'), null=True, blank=True)
     file = models.FileField(upload_to=upload_audo_file_location, verbose_name=_('فایل صوتی'), null=True, blank=True)
     short_description = models.TextField(verbose_name=_('خلاصه مطلب'))
+    likes = models.ManyToManyField(to=User, blank=True, verbose_name=_('لایک ها'))
+    share_link = models.CharField(_('لینک اشتراک گذاری'), max_length=250, null=True, blank=True)
     push_notif_description = models.TextField(verbose_name=_('توضیح مختصر پوش نوتیفیکیشن'))
     push_notif_thumbnail = models.ImageField(upload_to=upload_thumbnail_location,
                                              verbose_name=_('تصویر پوش نوتیفیکیشن'),
@@ -164,3 +162,6 @@ class CommentPoint(models.Model):
 
     def __str__(self):
         return str(self.value)
+
+
+

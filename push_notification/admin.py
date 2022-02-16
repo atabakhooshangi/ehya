@@ -4,8 +4,8 @@ from .models import PushNotificationSections
 
 @admin.register(PushNotificationSections)
 class PushNotifAdmin(admin.ModelAdmin):
-    list_display = ['id', 'home', 'support', 'ticket', 'treasure', 'inform']
-    list_editable = ['home', 'support', 'ticket', 'treasure', 'inform']
+    list_display = ['id', 'home', 'support', 'ticket', 'inform']
+    list_editable = ['home', 'support', 'ticket', 'inform']
 
     def has_add_permission(self, request):
         related_per = 'push_notification.add_pushnotificationsections'
