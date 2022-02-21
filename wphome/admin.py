@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.sites.shortcuts import get_current_site
 from mptt.admin import MPTTModelAdmin
+
+from ehyasalamat.permission_check import role_permission_checker
 from .models import Post, Category, Tag, Comment, CommentPoint, upload_thumbnail_location
 from push_notification.main import PushThread
 
@@ -15,23 +17,19 @@ class CommentInLine(admin.TabularInline):
 
     def has_add_permission(self, request, obj=None):
         related_per = 'wphome.add_comment'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'wphome.change_comment'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'wphome.view_comment'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'wphome.delete_comment'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(Post)
@@ -71,6 +69,3 @@ class CommentAdmin(MPTTModelAdmin):
 @admin.register(CommentPoint)
 class CommentPointAdmin(admin.ModelAdmin):
     list_display = ['id', 'value']
-
-
-

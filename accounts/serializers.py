@@ -62,7 +62,10 @@ class UserSerializer(serializers.ModelSerializer):
                   'field_of_study', 'job', 'points', 'profile_done', 'has_points']
 
     def get_role(self, obj):
-        return obj.role.name
+        roles = []
+        for role in obj.role.all():
+            roles.append(role.name)
+        return roles
 
     def get_profile_done(self, obj):
         return obj.profile_done

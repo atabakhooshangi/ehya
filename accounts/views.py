@@ -14,7 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.response import Response
 from .utils import get_visitor_ipaddress
-from .models import ProfileCompletionPoints, Role, ActivityPoint
+from .models import ProfileCompletionPoints, Role, ActivityPoint, AppUpdate
 
 User = get_user_model()
 
@@ -47,7 +47,7 @@ class RegisterLoginAPIView(generics.GenericAPIView):
         user = User.objects.create_user(phone_number=phone_number, password=None)
         user.ip = ip
         user.verify_code = code
-        user.role = Role.objects.filter(name='عضو عادی').last()
+        user.role.add(Role.objects.filter(name='عضو عادی').last())
         user.save()
         message = f'   کد احراز هویت شما : {code}'
         url = 'http://185.4.28.100/class/sms/restful/sendSms_OneToMany.php'
@@ -131,3 +131,11 @@ def five_minute_activity_point(request):
         user.points += ActivityPoint.objects.last().value
         user.save()
         return Response({'isDone': True}, status=HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def app_has_update(request):
+    if request.method == 'GET':
+        obj = AppUpdate.objects.last()
+        return Response({'isDone': True, "data": {"has_update": obj.value}}, status=HTTP_200_OK)

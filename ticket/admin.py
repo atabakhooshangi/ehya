@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from accounts.models import User
+from ehyasalamat.permission_check import role_permission_checker
 from . import models
 from jalali_date import datetime2jalali, date2jalali
 # from jet.filters import RelatedFieldAjaxListFilter
@@ -18,23 +19,19 @@ class AnswerInLine(admin.TabularInline):
 
     def has_add_permission(self, request, obj=None):
         related_per = 'ticket.add_answer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'ticket.change_answer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'ticket.view_answer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'ticket.delete_answer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(models.Ticket)
@@ -59,23 +56,19 @@ class TicketAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         related_per = 'ticket.add_ticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'ticket.change_ticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'ticket.view_ticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'ticket.delete_ticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     inlines = [AnswerInLine]
 
@@ -135,23 +128,20 @@ class TicketPointCostAdmin(admin.ModelAdmin):
         related_per = 'ticket.add_ticketpointcost'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
         related_per = 'ticket.change_ticketpointcost'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'ticket.view_ticketpointcost'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'ticket.delete_ticketpointcost'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(models.Section)
@@ -169,20 +159,17 @@ class TicketAnswerLimitAdmin(admin.ModelAdmin):
         related_per = 'ticket.add_ticketanswerlimit'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
         related_per = 'ticket.change_ticketanswerlimit'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'ticket.view_ticketanswerlimit'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'ticket.delete_ticketanswerlimit'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)

@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from ehyasalamat.permission_check import role_permission_checker
 from . import models
 from jalali_date import datetime2jalali, date2jalali
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
@@ -8,7 +10,7 @@ from django.contrib import admin
 
 @admin.register(models.Treasury)
 class TreasuryAdmin(admin.ModelAdmin):
-    list_display = ['id', 'topic', 'link_url', 'file_link', 'get_created_jalali']
+    list_display = ['id', 'user','topic', 'link_url', 'file_link', 'get_created_jalali']
     list_filter = [('created_at', DateRangeFilter)]
     search_fields = ['topic', 'user__phone_number']
 
@@ -33,23 +35,19 @@ class TreasuryAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request, obj=None):
         related_per = 'treasure.add_treasury'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'treasure.change_treasury'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'treasure.view_treasury'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'treasure.delete_treasury'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(models.TreasureAnswer)
@@ -61,20 +59,17 @@ class TreasureAnswerAdmin(admin.ModelAdmin):
         related_per = 'treasure.change_treasureanswer'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
         related_per = 'treasure.change_treasureanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'treasure.change_treasureanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'treasure.change_treasureanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)

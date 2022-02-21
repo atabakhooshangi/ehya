@@ -1,7 +1,7 @@
 import uuid
 from .user_manager import UserManager
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Permission
 from django.utils.translation import ugettext as _
 from ticket.models import TicketPointCost
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -46,6 +46,7 @@ ROLE_CHOICES = (
 class Role(models.Model):
     name = models.CharField(_('نام نقش'), max_length=50, null=False, blank=False)
     is_expert = models.BooleanField(_('ارشد'), default=False)
+    permissions = models.ManyToManyField(to=Permission, blank=True, verbose_name=_('دسترسی ها'))
 
     class Meta:
         verbose_name = _('نقش کاربر')
@@ -54,6 +55,15 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def get_role_permissions(self):
+        perms_list = []
+        perms = self.permissions.all()
+        for i in perms:
+            val = i.content_type.app_label + '.' + i.codename
+            perms_list.append(val)
+        return perms_list
 
 
 class ProfileCompletionPoints(models.Model):
@@ -70,7 +80,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name=_('ایمیل'), max_length=65, unique=True, blank=True, null=True)
     phone_number = models.CharField(verbose_name=_('شماره تلفن همراه'), max_length=20, blank=False, null=False,
                                     unique=True)
-    role = models.ForeignKey('Role', on_delete=models.DO_NOTHING, verbose_name=_('نقش کاربر'), null=True, blank=True)
+    role = models.ManyToManyField('Role', verbose_name=_('نقش کاربر'), blank=True)
     first_name = models.CharField(verbose_name=_('نام'), max_length=75, null=True, blank=True, default="")
     last_name = models.CharField(verbose_name=_('نام خانوادگی'), max_length=75, null=True, blank=True, default="")
     province = models.CharField(verbose_name=_('استان'), max_length=40, null=True, blank=True, default="")
@@ -96,14 +106,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_support = models.BooleanField(default=False, verbose_name=_('تیم پشتیبانی'))
 
     USERNAME_FIELD = 'phone_number'
 
     objects = UserManager()
 
     def __str__(self):
-        return f' کاربر  {self.role} - {self.phone_number}'
+        return f' کاربر {self.phone_number}'
 
     @property
     def profile_done(self):
@@ -148,3 +157,12 @@ class ActivityPoint(models.Model):
     class Meta:
         verbose_name = _('امتیاز فعالیت')
         verbose_name_plural = _('امتیاز فعالیت')
+
+
+class AppUpdate(models.Model):
+    value = models.BooleanField(default=False, verbose_name=_('دارد'),
+                                help_text=_('نشان میدهد آیا اپلیکیشن برروزرسانی دارد یا خیر'))
+
+    class Meta:
+        verbose_name = _('برروزرسانی')
+        verbose_name_plural = _('برروزرسانی')

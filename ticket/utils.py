@@ -8,8 +8,12 @@ def not_reached_answer_limit(user, obj: Ticket):
     :param obj:
     :return: bool
     """
-    if user.role.name in ['کارشناس', 'کارشناس ارشد']:
-        return True
+    bool_list = []
+    for role in user.role.all():
+        print(role)
+        if role.name in ['کارشناس', 'کارشناس ارشد']:
+            bool_list.append('True')
+        return 'True' in bool_list
     if user == obj.user:
         if obj.answer_set.filter(user=user).count() < TicketAnswerLimit.objects.last().value:
             return True

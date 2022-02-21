@@ -1,10 +1,11 @@
 # Internal imports
 import datetime
 
+from ehyasalamat.permission_check import ticket_permission_checker
 from push_notification.main import PushThread
 from .models import Ticket, TicketPointCost, Section
 from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer
-from .permissions import is_expert, IsOwner, IsExpert, IsExpertOrIsOwner
+from .permissions import IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
 from .utils import not_reached_answer_limit
 
@@ -70,7 +71,7 @@ class AnswerAPIView(generics.GenericAPIView):
 @permission_classes([IsAuthenticated])
 def close_ticket(request):
     if request.method == 'POST':
-        if request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
+        if ticket_permission_checker(user=request.user, role_list=['کارشناس', 'کارشناس ارشد']):
             ticket = get_object_or_404(Ticket, id=request.META['HTTP_ID'])
             ticket.status_for_user = '3'
             ticket.status_for_expert = '4'
@@ -83,7 +84,7 @@ def close_ticket(request):
 @permission_classes([IsAuthenticated])
 def reference_to_senior_expert(request):
     if request.method == 'POST':
-        if request.user.role.name == 'کارشناس':
+        if ticket_permission_checker(user=request.user, role_list=['کارشناس']):
             ticket = get_object_or_404(Ticket, id=request.META['HTTP_ID'])
             ticket.status_for_user = '1'
             ticket.status_for_expert = '2'
@@ -107,7 +108,7 @@ class TicketGetAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
+        if ticket_permission_checker(user=self.request.user, role_list=['کارشناس', 'کارشناس ارشد']):
             return Ticket.objects.all() if self.request.META['HTTP_FILTER'] == 'all' else Ticket.objects.filter(
                 status_for_expert=self.request.META['HTTP_FILTER'])
         return Ticket.objects.filter(user=self.request.user) \
@@ -158,7 +159,7 @@ def seen_by_user(request):
 @permission_classes([IsAuthenticated])
 def status_api(request):
     if request.method == 'GET':
-        if request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
+        if ticket_permission_checker(user=request.user, role_list=['کارشناس', 'کارشناس ارشد']):
             data = {
                 '1': 'جدید',
                 '2': 'ارجاء به کارشناس ارشد',
@@ -181,7 +182,7 @@ def status_api(request):
 @permission_classes([IsAuthenticated])
 def ticket_count_api(request):
     if request.method == 'GET':
-        if request.user.role.name in ['کارشناس', 'کارشناس ارشد']:
+        if ticket_permission_checker(user=request.user, role_list=['کارشناس', 'کارشناس ارشد']):
             new = Ticket.objects.filter(status_for_expert='1').count()
             refrenced = Ticket.objects.filter(status_for_expert='2').count()
             answered = Ticket.objects.filter(status_for_expert='3').count()

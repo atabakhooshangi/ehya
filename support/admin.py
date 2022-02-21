@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from accounts.models import User
+from ehyasalamat.permission_check import role_permission_checker
 from push_notification.main import PushThread
 from .models import SupportTicket, SupportAnswer, SupportSection, SupportTicketAnswerLimit
 from jalali_date import datetime2jalali, date2jalali
@@ -13,27 +14,23 @@ class SupportAnswerInLine(admin.TabularInline):
     extra = 0
     autocomplete_fields = ['user']
     # readonly_fields = ['user']
-    fields = ['text', 'user', 'status']
+    fields = ['text', 'user', 'status', 'id']
 
     def has_add_permission(self, request, obj=None):
         related_per = 'support.add_supportanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'support.change_supportanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'support.view_supportanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'support.delete_supportanswer'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(SupportTicket)
@@ -41,7 +38,7 @@ class SupportTicketAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'section', 'topic', 'status_for_user', 'status_for_support', 'get_created_jalali', ]
     autocomplete_fields = ['user']
     list_editable = ['section', 'status_for_user', 'status_for_support']
-    list_filter = ['status_for_user', 'status_for_support', ('created_at', DateRangeFilter)]
+    list_filter = ['section', 'status_for_user', 'status_for_support', ('created_at', DateRangeFilter)]
     search_fields = ['topic', 'user__phone_number']
     raw_id_fields = ['user']
     inlines = [SupportAnswerInLine]
@@ -72,25 +69,29 @@ class SupportTicketAdmin(admin.ModelAdmin):
 
     get_created_jalali.short_description = 'تاریخ ایجاد'
 
+    def get_queryset(self, request):
+        if request.user.is_superuser:
+            return self.model.objects.all()
+        user_roles = request.user.role.all()
+        section = SupportSection.objects.filter(associated_roles__in=user_roles)
+        query = SupportTicket.objects.filter(section__in=section)
+        return query
+
     def has_add_permission(self, request):
         related_per = 'support.add_supportticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'support.change_supportticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'support.view_supportticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'support.delete_supportticket'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(SupportSection)
@@ -100,23 +101,19 @@ class SupportSectionAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         related_per = 'support.add_supportsection'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'support.change_supportsection'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'support.view_ssupportsection'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'support.delete_supportsection'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(SupportTicketAnswerLimit)
@@ -128,20 +125,17 @@ class SupportTicketAnswerLimitAdmin(admin.ModelAdmin):
         related_per = 'support.add_supportticketanswerlimit'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
         related_per = 'support.change_supportticketanswerlimit'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'support.view_supportticketanswerlimit'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'support.delete_supportticketanswerlimit'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)

@@ -1,6 +1,7 @@
 # Internal imports
 import datetime
 
+from ehyasalamat.permission_check import support_permission_checker
 from push_notification.main import PushThread
 from .models import SupportTicket, SupportSection
 from .serializers import SupportTicketSerializer, GetSupportTicketSerializer, SupportAnswerSerializer, \
@@ -9,9 +10,6 @@ from .utils import reached_support_answer_limit
 from ticket.permissions import is_expert, IsOwner, IsExpert, IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
 from .permissions import IsSupportAdminOrOwner
-# Django imports
-from django.utils.translation import ugettext as _
-from django.contrib.auth import get_user_model
 
 # Rest Framework imports
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
@@ -19,10 +17,8 @@ from rest_framework import generics
 from rest_framework.generics import get_object_or_404, CreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_200_OK, HTTP_400_BAD_REQUEST
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-
-User = get_user_model()
+from accounts.models import User
 
 
 class SupportTicketAPIView(generics.CreateAPIView):
@@ -33,7 +29,6 @@ class SupportTicketAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         data = self.request.data
         serializer = self.serializer_class(data=data, context={'request': self.request})
-        print(self.request.user.get_user_permissions())
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
 
@@ -44,11 +39,10 @@ class GetUserSupportTicketsAPIView(generics.ListAPIView):
     renderer_classes = [Renderer]
 
     def get_queryset(self):
-        if self.request.user.is_support:
-            section = SupportSection.objects.filter(associated_roles__in=[self.request.user.role]).last()
-            if self.request.user.role.is_expert:
-                return SupportTicket.objects.filter(section=section)
-            return SupportTicket.objects.filter(section=section).exclude(status='2')
+        if support_permission_checker(user=self.request.user):
+            user_roles = self.request.user.role.all()
+            section = SupportSection.objects.filter(associated_roles__in=user_roles)
+            return SupportTicket.objects.filter(section__in=section)
         return SupportTicket.objects.filter(user=self.request.user)
 
 
@@ -95,8 +89,13 @@ class RetrieveTicketSerializer(generics.RetrieveAPIView):
 def close_support_ticket(request, ticket_id):
     if request.method == 'POST':
         ticket = get_object_or_404(SupportTicket, id=ticket_id)
-        if request.user.role in ticket.section.associated_roles.all():
-            ticket.status = '5'
+        bool_list = []
+        for role in request.user.role.all():
+            if role in ticket.section.associated_roles.all():
+                bool_list.append('True')
+        if 'True' in bool_list or request.user.is_superuser:
+            ticket.status_for_user = '3'
+            ticket.status_for_support = '3'
             ticket.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
         return Response({'isDone': False}, status=HTTP_403_FORBIDDEN)
@@ -133,6 +132,7 @@ def seen_by_user(request):
                 answer.seen_at = datetime.datetime.now()
                 answer.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
+        return Response({'isDone': False}, status=HTTP_403_FORBIDDEN)
 
 
 @api_view(['GET'])
@@ -140,7 +140,7 @@ def seen_by_user(request):
 @permission_classes([IsAuthenticated])
 def status_api_support(request):
     if request.method == 'GET':
-        if request.user.is_support:
+        if support_permission_checker(user=request.user):
             data = {
                 '1': 'جدید',
                 '3': 'پاسخ داده شده',
@@ -162,7 +162,7 @@ def status_api_support(request):
 @permission_classes([IsAuthenticated])
 def support_ticket_count_api(request):
     if request.method == 'GET':
-        if request.user.is_support:
+        if support_permission_checker(user=request.user):
             new = SupportTicket.objects.filter(status_for_support='1').count()
             answered = SupportTicket.objects.filter(status_for_support='2').count()
             closed = SupportTicket.objects.filter(status_for_support='3').count()

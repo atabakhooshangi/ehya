@@ -99,6 +99,9 @@ class Answer(models.Model):
         verbose_name_plural = _('پاسخ ها')
         ordering = ('created_at',)
 
+    def __str__(self):
+        return str(self.id)
+
 
 class TicketPointCost(models.Model):
     value = models.PositiveIntegerField(default=0, verbose_name=_('مقدار'), null=False, blank=False,

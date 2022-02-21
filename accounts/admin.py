@@ -8,21 +8,39 @@ from django.utils.translation import ugettext as _
 from rangefilter.filters import DateRangeFilter
 from jalali_date import datetime2jalali
 from django.contrib.sites.shortcuts import get_current_site
+from ehyasalamat.permission_check import role_permission_checker
 
 
 @admin.register(models.Role)
 class RoleAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
+    filter_horizontal = ['permissions']
+
+    def has_add_permission(self, request):
+        related_per = 'accounts.add_role'
+        return role_permission_checker(related_per, request.user)
+
+    def has_change_permission(self, request, obj=None):
+        related_per = 'accounts.change_role'
+        return role_permission_checker(related_per, request.user)
+
+    def has_view_permission(self, request, obj=None):
+        related_per = 'accounts.view_role'
+        return role_permission_checker(related_per, request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        related_per = 'accounts.delete_role'
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'phone_number', 'role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support',
+    list_display = ['id', 'phone_number', 'is_active', 'is_admin', 'is_staff', 'is_superuser',
                     'get_created_jalali']
-    list_editable = ['role', 'is_active', 'is_admin', 'is_staff', 'is_superuser', 'is_support']
+    list_editable = ['is_active', 'is_admin', 'is_staff', 'is_superuser']
     list_filter = ['role', ('date_joined', DateRangeFilter), 'is_active', 'is_admin', 'is_staff', 'is_superuser']
     search_fields = ['phone_number', 'first_name']
-
+    filter_horizontal = ['role']
     actions = ['select_users_for_sms']
 
     fieldsets = [
@@ -41,7 +59,7 @@ class UserAdmin(admin.ModelAdmin):
             'fields': ('points', 'profile_completion_point')
         }),
         ('بخش سطح کاربری', {
-            'fields': ('user_permissions', 'is_admin', 'is_staff', 'is_superuser', 'is_active', 'is_support', 'role')
+            'fields': ('is_admin', 'is_staff', 'is_superuser', 'is_active', 'role')
         }),
         ('اطلاعات بیشتر', {
             'fields': ('ip', 'verify_code')
@@ -83,18 +101,16 @@ class ProfileCompletionPointsAdmin(admin.ModelAdmin):
         related_per = 'accounts.add_profilecompletionpoints'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
         related_per = 'accounts.change_profilecompletionpoints'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'accounts.view_profilecompletionpoints'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
 
 @admin.register(models.ActivityPoint)
@@ -106,18 +122,41 @@ class ActivityPointsAdmin(admin.ModelAdmin):
         related_per = 'accounts.add_activitypoint'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in request.user.get_user_permissions():
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
         related_per = 'accounts.add_activitypoint'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'accounts.add_activitypoint'
-        if related_per in request.user.get_user_permissions():
+        return role_permission_checker(related_per, request.user)
+
+
+@admin.register(models.AppUpdate)
+class AppUpdateAdmin(admin.ModelAdmin):
+    list_display = ['id', 'value']
+    list_editable = ['value']
+
+    def has_add_permission(self, request):
+        related_per = 'accounts.add_appupdate'
+        if self.model.objects.count() >= 1:
+            return False
+        elif self.model.objects.count() < 1 and related_per in role_permission_checker(related_per, request.user):
             return True
+
+    def has_change_permission(self, request, obj=None):
+        related_per = 'accounts.change_appupdate'
+        return role_permission_checker(related_per, request.user)
+
+    def has_view_permission(self, request, obj=None):
+        related_per = 'accounts.view_appupdate'
+        return role_permission_checker(related_per, request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        related_per = 'accounts.delete_appupdate'
+        return role_permission_checker(related_per, request.user)
 
 
 admin.site.unregister(Group)

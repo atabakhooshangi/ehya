@@ -85,7 +85,7 @@ class SupportAnswer(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        return f"support ticket {self.ticket.id}'s answer"
+        return f"support ticket {self.ticket.id}'s answer with id {str(self.id)}"
 
 
 class SupportTicketAnswerLimit(models.Model):

@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from ehyasalamat.permission_check import role_permission_checker
 from . import models
 from jalali_date import datetime2jalali, date2jalali
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
@@ -37,20 +39,16 @@ class InformAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         related_per = 'informs.add_inform'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'informs.change_inform'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_view_permission(self, request, obj=None):
         related_per = 'informs.view_inform'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)
 
     def has_delete_permission(self, request, obj=None):
         related_per = 'informs.delete_inform'
-        if related_per in request.user.get_user_permissions():
-            return True
+        return role_permission_checker(related_per, request.user)

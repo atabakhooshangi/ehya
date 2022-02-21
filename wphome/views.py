@@ -44,7 +44,8 @@ class CategoryTreeRetrieveAPIView(generics.RetrieveAPIView):
 class CategoryRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = SingleCategorySerializer
     renderer_classes = [Renderer]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    queryset = Category.objects.all()
 
     def get_queryset(self):
         categories = Category.objects.viewable()
@@ -87,6 +88,7 @@ class PostRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = PostsRetrieveSerializer
     renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
 
     def get_serializer_context(self):
         context = super(PostRetrieveAPIView, self).get_serializer_context()
@@ -113,6 +115,7 @@ class CreateCommentAPIView(generics.GenericAPIView):
 class DeleteCommentAPIView(generics.DestroyAPIView):
     serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated, IsOwner]
+    queryset = Comment.objects.all()
 
     def get_object(self):
         print(self.kwargs['pk'])
@@ -139,11 +142,13 @@ class AddOrRemovePostToLikesAPIView(APIView):
         post = get_object_or_404(Post, id=post_id)
 
         if post.likes.filter(id=request.user.id).exists():
+            result = False
             post.likes.remove(request.user)
         else:
+            result = True
             post.likes.add(request.user)
 
-        return Response({'isDone': True}, status=HTTP_200_OK)
+        return Response({'isDone': True, 'data': {'liked': result}}, status=HTTP_200_OK)
 
 
 class GetUserSearchHistory(generics.GenericAPIView):
