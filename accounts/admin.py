@@ -143,7 +143,7 @@ class AppUpdateAdmin(admin.ModelAdmin):
         related_per = 'accounts.add_appupdate'
         if self.model.objects.count() >= 1:
             return False
-        elif self.model.objects.count() < 1 and related_per in role_permission_checker(related_per, request.user):
+        elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
 
     def has_change_permission(self, request, obj=None):
