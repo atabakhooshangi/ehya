@@ -86,9 +86,9 @@ class RetrieveTicketSerializer(generics.RetrieveAPIView):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def close_support_ticket(request, ticket_id):
+def close_support_ticket(request):
     if request.method == 'POST':
-        ticket = get_object_or_404(SupportTicket, id=ticket_id)
+        ticket = get_object_or_404(SupportTicket, id=request.META['HTTP_ID'])
         bool_list = []
         for role in request.user.role.all():
             if role in ticket.section.associated_roles.all():
