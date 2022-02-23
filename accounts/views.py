@@ -138,4 +138,5 @@ def five_minute_activity_point(request):
 def app_has_update(request):
     if request.method == 'GET':
         obj = AppUpdate.objects.last()
-        return Response({'isDone': True, "data": {"has_update": obj.value}}, status=HTTP_200_OK)
+        return Response({'isDone': True, "data": {"has_update": obj.value, "update_link": obj.link}},
+                        status=HTTP_200_OK)
