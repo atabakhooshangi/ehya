@@ -162,6 +162,7 @@ class ActivityPoint(models.Model):
 class AppUpdate(models.Model):
     value = models.BooleanField(default=False, verbose_name=_('دارد'),
                                 help_text=_('نشان میدهد آیا اپلیکیشن برروزرسانی دارد یا خیر'))
+    link = models.CharField(max_length=300, null=True, blank=True, verbose_name=_('لینک آپدیت'))
 
     class Meta:
         verbose_name = _('برروزرسانی')
