@@ -7,7 +7,7 @@ import threading
 
 
 class PushNotification:
-    def __init__(self, section: str, title: str, body: str, push_type: str, user: QuerySet = None, image=None):
+    def __init__(self, title: str, body: str, push_type: str, user: QuerySet = None, image=None, section: str = None):
         self.section = section
         self.title = title
         self.body = body
@@ -18,11 +18,12 @@ class PushNotification:
     def check_section(self):
         if getattr(PushNotificationSections.objects.last(), self.section) is True:
             return True
+        if self.section == 'push':
+            return True
         return False
 
     def find_devices(self):
         devices = FCMDevice.objects.filter(user__in=self.user)
-        print(devices)
         return devices
 
     def send(self):
