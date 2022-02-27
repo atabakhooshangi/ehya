@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.contrib import admin
+from django.contrib.sites.shortcuts import get_current_site
 
 from accounts.models import User
 from ehyasalamat.permission_check import role_permission_checker
 from .main import PushThread
-from .models import PushNotificationSections, SendPush
+from .models import PushNotificationSections, SendPush , upload_location
 
 
 @admin.register(PushNotificationSections)
@@ -30,6 +32,7 @@ class PushNotifAdmin(admin.ModelAdmin):
 @admin.register(SendPush)
 class SendPushAdmin(admin.ModelAdmin):
     list_display = ['title', 'image', 'date_created']
+    filter_horizontal = ['receptors']
 
     def has_add_permission(self, request):
         related_per = 'push_notification.add_sendpush'
@@ -49,11 +52,14 @@ class SendPushAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+        photo_url = upload_location(obj, str(obj.image))
+        url = 'http://' + get_current_site(request).domain + settings.MEDIA_URL + photo_url
         if obj.send_to_all:
-            PushThread(section='push', title=obj.title, body=obj.body, image=obj.image,
+            PushThread(section='push', title=obj.title, body=obj.body, image=str(url),
                        push_type='all').start()
         else:
+            print('group')
             obj.receptors.clear()
             users = form.cleaned_data['receptors']
-            PushThread(section='push', title=obj.title, body=obj.body, image=obj.image,
+            PushThread(section='push', title=obj.title, body=obj.body, image=str(url),
                        push_type='group', user=users).start()

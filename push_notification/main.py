@@ -16,9 +16,9 @@ class PushNotification:
         self.image = image
 
     def check_section(self):
-        if getattr(PushNotificationSections.objects.last(), self.section) is True:
-            return True
         if self.section == 'push':
+            return True
+        if getattr(PushNotificationSections.objects.last(), self.section) is True:
             return True
         return False
 
