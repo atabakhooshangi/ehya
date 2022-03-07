@@ -38,13 +38,13 @@ def answer_upload_location(instance, filename):
     return f'uploads/tickets/ticket{ticket_id}_answer{answer_id}.{extension}'
 
 
-class TicketAnswerLimit(models.Model):
-    value = models.PositiveIntegerField(_('مقدار'), default=3, help_text=_(
-        'مقدار وارد شده تعیین میکند که کاربر حداکثر تا چند پاسخ در بدنه پرسش خود میتواند مطرح کند.'))
-
-    class Meta:
-        verbose_name = _('محدودیت تعداد پاسخ')
-        verbose_name_plural = _('محدودیت تعداد پاسخ')
+# class TicketAnswerLimit(models.Model):
+#     value = models.PositiveIntegerField(_('مقدار'), default=3, help_text=_(
+#         'مقدار وارد شده تعیین میکند که کاربر حداکثر تا چند پاسخ در بدنه پرسش خود میتواند مطرح کند.'))
+#
+#     class Meta:
+#         verbose_name = _('محدودیت تعداد پاسخ')
+#         verbose_name_plural = _('محدودیت تعداد پاسخ')
 
 
 class Section(models.Model):
@@ -80,12 +80,12 @@ class Ticket(models.Model):
         ordering = ('created_at',)
 
     def __str__(self):
-        return self.user.phone_number
+        return f' تیکت {self.user} '
 
 
 class Answer(models.Model):
-    user = models.ForeignKey(to='accounts.User', verbose_name=_('کاربر'), on_delete=models.CASCADE, null=False,
-                             blank=False)
+    user = models.ForeignKey(to='accounts.User', verbose_name=_('کاربر'), on_delete=models.CASCADE, null=True,
+                             blank=True)
     ticket = models.ForeignKey(to=Ticket, verbose_name=_('تیکت مربوطه'), on_delete=models.CASCADE, null=False,
                                blank=False)
     text = models.TextField(_('متن پاسخ'), null=True, blank=True)
@@ -103,10 +103,10 @@ class Answer(models.Model):
         return str(self.id)
 
 
-class TicketPointCost(models.Model):
-    value = models.PositiveIntegerField(default=0, verbose_name=_('مقدار'), null=False, blank=False,
-                                        help_text=_('مقدار هزینه امتیاز جهت طرح پرسش توسط کاربر'))
-
-    class Meta:
-        verbose_name = _('هزینه پرسش')
-        verbose_name_plural = _('هزینه پرسش')
+# class TicketPointCost(models.Model):
+#     value = models.PositiveIntegerField(default=0, verbose_name=_('مقدار'), null=False, blank=False,
+#                                         help_text=_('مقدار هزینه امتیاز جهت طرح پرسش توسط کاربر'))
+#
+#     class Meta:
+#         verbose_name = _('هزینه پرسش')
+#         verbose_name_plural = _('هزینه پرسش')

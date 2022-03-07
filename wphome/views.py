@@ -37,7 +37,7 @@ class CategoryTreeRetrieveAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         categories = Category.objects.viewable()
-        filtered_categories = categories.filter(id=self.kwargs['pk'])
+        filtered_categories = categories.filter(id=self.kwargs['id'])
         return filtered_categories
 
 
@@ -49,7 +49,7 @@ class CategoryRetrieveAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         categories = Category.objects.viewable()
-        filtered_categories = categories.filter(id=self.kwargs['pk'])
+        filtered_categories = categories.filter(id=self.kwargs['id'])
         return filtered_categories
 
 
@@ -68,10 +68,12 @@ class PostsListView(generics.ListAPIView):
     def get_queryset(self):
         param = self.kwargs['id']
         if param == 'all':
-            return Post.objects.filter(published=True)
+            return Post.objects.filter(status='1')
         if param == 'liked':
-            return Post.objects.filter(likes__in=[self.request.user], published=True)
-        return Post.objects.filter(category_id=self.kwargs['id'], published=True)
+            return Post.objects.filter(likes__in=[self.request.user], status='1')
+        if param == 'favorite':
+            return Post.objects.filter(favorite__in=[self.request.user])
+        return Post.objects.filter(categories__in=[self.kwargs['id']], status='1')
 
 
 class PostsSearchView(generics.ListAPIView):
@@ -97,7 +99,7 @@ class PostRetrieveAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         print(self.kwargs['pk'])
-        return get_object_or_404(Post, id=self.kwargs['pk'], published=True)
+        return get_object_or_404(Post, id=self.kwargs['pk'], status='1')
 
 
 class CreateCommentAPIView(generics.GenericAPIView):
@@ -151,13 +153,53 @@ class AddOrRemovePostToLikesAPIView(APIView):
         return Response({'isDone': True, 'data': {'liked': result}}, status=HTTP_200_OK)
 
 
-class GetUserSearchHistory(generics.GenericAPIView):
+class AddOrRemovePostToFavoriteAPIView(APIView):
     permission_classes = [IsAuthenticated, ]
-    renderer_classes = [Renderer]
-    serializer_class = PostsListSerializer
 
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        posts = user.searchhistory.posts.all()
-        serializer = self.serializer_class(posts, many=True)
-        return Response(serializer.data, status=HTTP_200_OK)
+    def post(self, request, *args, **kwargs):
+        post_id = kwargs['post_id']
+        post = get_object_or_404(Post, id=post_id)
+
+        if post.favorite.filter(id=request.user.id).exists():
+            result = False
+            post.favorite.remove(request.user)
+        else:
+            result = True
+            post.favorite.add(request.user)
+
+        return Response({'isDone': True, 'data': {'favorite': result}}, status=HTTP_200_OK)
+
+
+class AddPostToViewsAPIView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, *args, **kwargs):
+        post_id = kwargs['post_id']
+        post = get_object_or_404(Post, id=post_id)
+
+        if not post.views.filter(id=request.user.id).exists():
+            print('inja')
+            post.views.add(request.user)
+
+        return Response({'isDone': True}, status=HTTP_200_OK)
+
+
+# class UserFavoritePostsAPIView(generics.ListAPIView):
+#     serializer_class = PostsListSerializer
+#     renderer_classes = [Renderer]
+#     permission_classes = [IsAuthenticated]
+#
+#     def get_queryset(self):
+#         return Post.objects.filter(favorite__in=[self.request.user])
+
+
+# class GetUserSearchHistory(generics.GenericAPIView):
+#     permission_classes = [IsAuthenticated, ]
+#     renderer_classes = [Renderer]
+#     serializer_class = PostsListSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         user = request.user
+#         posts = user.searchhistory.posts.all()
+#         serializer = self.serializer_class(posts, many=True)
+#         return Response(serializer.data, status=HTTP_200_OK)

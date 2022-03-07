@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
+from django.utils.safestring import mark_safe
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext as _
@@ -8,6 +9,14 @@ from django.contrib.auth.views import get_user_model
 from django.db.models import Q
 
 User = get_user_model()
+
+POST_STATUS = (
+    ('1', 'منتشر شده'),
+    ('2', 'عدم انتشار'),
+    ('3', 'برای بازبینی'),
+    ('4', 'پیش نویس'),
+    ('5', 'در صف انتشار')
+)
 
 
 class PostManager(models.Manager):
@@ -18,24 +27,25 @@ class PostManager(models.Manager):
                 Q(tags__name__icontains=query) |
                 Q(category__name__icontains=query)
         )
-        return self.get_queryset().filter(lookup, published=True).distinct()
+        return self.get_queryset().filter(lookup, status='1').distinct()
 
 
 def upload_audo_file_location(instance, filename):
-    extension = filename.split('.')[-1]
-    return f'uploads/radio_ehya/Post_radi_ehya_{instance.slug}.{extension}'
+    # extension = filename.split('.')[-1]
+    return f'uploads/radio_ehya/{filename}'
 
 
 def upload_image_location(instance, filename):
-    extension = filename.split('.')[-1]
+    # extension = filename.split('.')[-1]
     # slug = instance.slug.replace('_', '-')
-    return f'uploads/post_images/Post_image_{instance.slug}.{extension}'
+    # return f'uploads/post_images/Post_image_{instance.title}.{extension}'
+    return f'uploads/post_images/{filename}'
 
 
 def upload_thumbnail_location(instance, filename):
-    extension = filename.split('.')[-1]
-    slug = instance.slug.replace('_', '-')
-    return f'uploads/push_notif_thumbnails/Post_thumbnail_{instance.slug}.{extension}'
+    # extension = filename.split('.')[-1]
+    # return f'uploads/push_notif_thumbnails/Post_thumbnail_{instance.title}.{extension}'
+    return f'uploads/push_notif_thumbnails/{filename}'
 
 
 class CategoryManager(TreeManager):
@@ -46,7 +56,8 @@ class CategoryManager(TreeManager):
 
 class Category(MPTTModel):
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('نام'))
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
+                            verbose_name=_('والد'))
 
     objects = CategoryManager()
 
@@ -75,19 +86,19 @@ class Tag(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('عنوان'))
-    slug = models.SlugField(max_length=150, null=False, blank=False, unique=True)
-    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, null=False, blank=False,
-                                 verbose_name=_('دسته بندی'))
+    categories = models.ManyToManyField(to=Category, blank=False, verbose_name=_('دسته بندی'))
     image = models.ImageField(upload_to=upload_image_location, verbose_name=_('تصویر پست'), null=True, blank=True)
     file = models.FileField(upload_to=upload_audo_file_location, verbose_name=_('فایل صوتی'), null=True, blank=True)
     short_description = models.TextField(verbose_name=_('خلاصه مطلب'))
-    likes = models.ManyToManyField(to=User, blank=True, verbose_name=_('لایک ها'))
+    likes = models.ManyToManyField(to=User, blank=True, verbose_name=_('لایک ها'), related_name='likes')
     share_link = models.CharField(_('لینک اشتراک گذاری'), max_length=250, null=True, blank=True)
     push_notif_description = models.TextField(verbose_name=_('توضیح مختصر پوش نوتیفیکیشن'))
     push_notif_thumbnail = models.ImageField(upload_to=upload_thumbnail_location,
                                              verbose_name=_('تصویر پوش نوتیفیکیشن'),
                                              null=True, blank=True)
     tags = models.ManyToManyField(to=Tag, blank=True, verbose_name=_('برچسب ها'))
+    views = models.ManyToManyField(to=User, blank=True, verbose_name=_('بازدید کنندگان'), related_name='views')
+    favorite = models.ManyToManyField(to=User, blank=True, verbose_name=_('غلاقه مندی'), related_name='favorite')
     link_tv = models.URLField(verbose_name=_('لینک احیا تی وی'),
                               help_text=_('اگر پست از نوع احیا تی وی بود لینک آن اینجا درج شود.'), null=True,
                               blank=True)
@@ -95,18 +106,25 @@ class Post(models.Model):
     ehya_tv = models.BooleanField(default=False, verbose_name=_('احیا تی وی'))
     special_post = models.BooleanField(default=False, verbose_name=_('پست ویژه'))
     send_push = models.BooleanField(default=True, verbose_name=_('ارسال پوش نوتیفیکیشن'))
-    published = models.BooleanField(default=True, verbose_name=_('منتشر شده'))
-    date_published = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
+    status = models.CharField(_('وضعیت'), max_length=1, null=True, blank=False, choices=POST_STATUS)
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
+    date_to_publish = models.DateTimeField(null=True, blank=True, verbose_name=_('تاریخ انتشار'))
 
     objects = PostManager()
 
     class Meta:
         verbose_name = _('پست')
         verbose_name_plural = _('پست ها')
-        ordering = ('date_published',)
+        ordering = ('date_created',)
 
     def __str__(self):
         return self.title
+
+    @property
+    def thumbnail_preview(self):
+        if self.image:
+            return mark_safe('<img src="{}" width="280" height="200" />'.format(self.image.url))
+        return ""
 
 
 @receiver(pre_save, sender=Post)
@@ -115,16 +133,20 @@ def delete_old_file(sender, instance, **kwargs):
         try:
             old_image = sender.objects.get(pk=instance.pk).image
             old_thumbnail = sender.objects.get(pk=instance.pk).push_notif_thumbnail
+            old_radio = sender.objects.get(pk=instance.pk).file
         except sender.DoesNotExist:
             return
 
         else:
-            file = instance.image
+            img = instance.image
             thumbnail = instance.push_notif_thumbnail
-            if not old_image == file:
+            radio = instance.file
+            if not old_image == img:
                 old_image.delete(save=False)
             if not old_thumbnail == thumbnail:
                 old_thumbnail.delete(save=False)
+            if not old_radio == radio:
+                old_radio.delete(save=False)
 
 
 @receiver(pre_delete, sender=Post)
@@ -137,9 +159,11 @@ class Comment(MPTTModel):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False, blank=False, verbose_name=_('کاربر'))
     related_post = models.ForeignKey(to=Post, on_delete=models.CASCADE, null=False, blank=False,
                                      verbose_name=_('پست مرتبط'))
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
+                            verbose_name=_('کامنت والد'))
     text = models.TextField(verbose_name=_('متن'))
     approved = models.BooleanField(default=False, verbose_name=_('تایید شده'))
+    point_gained = models.BooleanField(default=False, verbose_name=_('امتیاز کسب شده'))
     date_created = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
 
     class Meta:
@@ -150,18 +174,14 @@ class Comment(MPTTModel):
         order_insertion_by = ['date_created']
 
     def __str__(self):
-        return f"{self.user}'s comment for post {self.related_post.id}"
+        return f" کامنت {self.user}  برای پست {self.related_post.title}"
 
-
-class CommentPoint(models.Model):
-    value = models.PositiveIntegerField(default=5, verbose_name=_('مقدار'))
-
-    class Meta:
-        verbose_name = _('امتیاز ثبت کامنت')
-        verbose_name_plural = _('امتیاز ثبت کامنت')
-
-    def __str__(self):
-        return str(self.value)
-
-
-
+# class CommentPoint(models.Model):
+#     value = models.PositiveIntegerField(default=5, verbose_name=_('مقدار'))
+#
+#     class Meta:
+#         verbose_name = _('امتیاز ثبت کامنت')
+#         verbose_name_plural = _('امتیاز ثبت کامنت')
+#
+#     def __str__(self):
+#         return str(self.value)

@@ -1,4 +1,5 @@
-from .models import Answer, TicketAnswerLimit, Ticket
+from .models import Ticket
+from accounts.models import AppSettings
 
 
 def not_reached_answer_limit(user, obj: Ticket):
@@ -9,13 +10,12 @@ def not_reached_answer_limit(user, obj: Ticket):
     :return: bool
     """
     bool_list = []
+    if user == obj.user:
+        if obj.answer_set.filter(user=user).count() < AppSettings.objects.last().ticket_answer_limit:
+            return True
+        return False
     for role in user.role.all():
-        print(role)
         if role.name in ['کارشناس', 'کارشناس ارشد']:
             bool_list.append('True')
         return 'True' in bool_list
-    if user == obj.user:
-        if obj.answer_set.filter(user=user).count() < TicketAnswerLimit.objects.last().value:
-            return True
-        return False
     return False

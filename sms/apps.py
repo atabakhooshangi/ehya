@@ -6,5 +6,5 @@ class SmsConfig(AppConfig):
     name = 'sms'
     verbose_name = "پیامک ها"
 
-    def ready(self):
-        import sms.signals
+    # def ready(self):
+    #     import sms.signals

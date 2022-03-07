@@ -88,10 +88,10 @@ class SupportAnswer(models.Model):
         return f"support ticket {self.ticket.id}'s answer with id {str(self.id)}"
 
 
-class SupportTicketAnswerLimit(models.Model):
-    value = models.PositiveIntegerField(_('مقدار'), default=3, help_text=_(
-        'مقدار وارد شده تعیین میکند که کاربر حداکثر تا چند پاسخ در بدنه تیکت پشتیبانی خود میتواند مطرح کند.'))
-
-    class Meta:
-        verbose_name = _('محدودیت تعداد پاسخ تیکت پشتیبانی')
-        verbose_name_plural = _('محدودیت تعداد پاسخ تیکت پشتیبانی ')
+# class SupportTicketAnswerLimit(models.Model):
+#     value = models.PositiveIntegerField(_('مقدار'), default=3, help_text=_(
+#         'مقدار وارد شده تعیین میکند که کاربر حداکثر تا چند پاسخ در بدنه تیکت پشتیبانی خود میتواند مطرح کند.'))
+#
+#     class Meta:
+#         verbose_name = _('محدودیت تعداد پاسخ تیکت پشتیبانی')
+#         verbose_name_plural = _('محدودیت تعداد پاسخ تیکت پشتیبانی ')

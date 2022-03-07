@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.contrib.auth.views import get_user_model
 from rest_framework.exceptions import ValidationError
@@ -8,6 +9,7 @@ User = get_user_model()
 
 def file_size(value):  # add this to some file where you can import it from
     limit = 7 * 1024 * 1024
+    limit = 40 * 1024 * 1024
     if value.size > limit:
         raise ValidationError(_('حجم فایل نمیتواند بیشتر از 5 مگابایت باشد.'))
 
@@ -37,6 +39,9 @@ class Treasury(models.Model):
 
     def __str__(self):
         return f' گنجینه {self.id} '
+
+
+
 
 
 class TreasureAnswer(models.Model):

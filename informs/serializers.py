@@ -9,19 +9,19 @@ User = get_user_model()
 
 
 class InformSerializer(serializers.ModelSerializer):
-    classification = serializers.SerializerMethodField()
+    inf_classification = serializers.SerializerMethodField()
     inf_type = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Inform
-        fields = ['inf_type', 'topic', 'text', 'classification', 'created_at']
+        fields = ['inf_type', 'topic', 'text', 'inf_classification', 'created_at']
 
     def get_inf_type(self, obj):
         return obj.get_inf_type_display()
 
-    def get_classification(self, obj):
-        return obj.get_classification_display()
+    def get_inf_classification(self, obj):
+        return obj.inf_classification.name
 
     def get_created_at(self, obj):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')

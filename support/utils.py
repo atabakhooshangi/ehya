@@ -1,4 +1,5 @@
-from .models import SupportTicket, SupportTicketAnswerLimit
+from .models import SupportTicket
+from accounts.models import AppSettings
 
 
 def reached_support_answer_limit(user, obj: SupportTicket):
@@ -8,10 +9,9 @@ def reached_support_answer_limit(user, obj: SupportTicket):
     :param obj:
     :return: bool
     """
-    if user.is_support:
-        return True
+
     if user == obj.user:
-        if obj.supportanswer_set.filter(user=user).count() < SupportTicketAnswerLimit.objects.last().value:
+        if obj.supportanswer_set.filter(user=user).count() < AppSettings.objects.last().ticket_answer_limit:
             return True
         return False
-    return False
+    return True

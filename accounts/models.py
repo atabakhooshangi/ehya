@@ -3,8 +3,8 @@ from .user_manager import UserManager
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Permission
 from django.utils.translation import ugettext as _
-from ticket.models import TicketPointCost
 from rest_framework_simplejwt.tokens import RefreshToken
+
 
 GENDER_CHOICES = (
     ('مرد', 'مرد'),
@@ -66,13 +66,13 @@ class Role(models.Model):
         return perms_list
 
 
-class ProfileCompletionPoints(models.Model):
-    value = models.PositiveIntegerField(default=0, verbose_name=_('مقدار'), null=False, blank=False, help_text=_(
-        'بعد از تکمیل پروفایل این مقدار امتیاز به کاربر توسط کاربر کسب میشود'))
-
-    class Meta:
-        verbose_name = _('امتیاز اولبه')
-        verbose_name_plural = _('امتیاز اولبه')
+# class ProfileCompletionPoints(models.Model):
+#     value = models.PositiveIntegerField(default=0, verbose_name=_('مقدار'), null=False, blank=False, help_text=_(
+#         'بعد از تکمیل پروفایل این مقدار امتیاز به کاربر توسط کاربر کسب میشود'))
+#
+#     class Meta:
+#         verbose_name = _('امتیاز تکمیل پروفایل  (تنظیمات)')
+#         verbose_name_plural = _('امتیاز تکمیل پروفایل (تنظیمات)')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -112,7 +112,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return f' کاربر {self.phone_number}'
+        if self.first_name and self.last_name:
+            return f' {self.first_name} {self.last_name} - {self.phone_number}'
+        return f'{self.phone_number}'
 
     @property
     def profile_done(self):
@@ -134,7 +136,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def check_point_status_for_ticket(self):
-        if self.points >= TicketPointCost.objects.last().value:
+        if self.points >= AppSettings.objects.last().ticket_cost:
             return True
         return False
 
@@ -150,13 +152,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering = ('date_joined',)
 
 
-class ActivityPoint(models.Model):
-    value = models.PositiveIntegerField(default=5, verbose_name=_('مقدار'), null=False, blank=False,
-                                        help_text=_('مقدار امتیاز اهدایی جهت استفاده بیش از 5 دقیقه از اپلیکیشن'))
-
-    class Meta:
-        verbose_name = _('امتیاز فعالیت')
-        verbose_name_plural = _('امتیاز فعالیت')
+# class ActivityPoint(models.Model):
+#     value = models.PositiveIntegerField(default=5, verbose_name=_('مقدار'), null=False, blank=False,
+#                                         help_text=_('مقدار امتیاز اهدایی جهت استفاده بیش از 5 دقیقه از اپلیکیشن'))
+#
+#     class Meta:
+#         verbose_name = _('امتیاز فعالیت (تنظیمات)')
+#         verbose_name_plural = _('امتیاز فعالیت (تنظیمات)')
+#
+#
+# class ReferralPoint(models.Model):
+#     value = models.PositiveIntegerField(default=10, verbose_name=_('مقدار'), null=False, blank=False,
+#                                         help_text=_('مقدار امتیاز اهدایی جهت دعوت از دوستان'))
+#
+#     class Meta:
+#         verbose_name = _('امتیاز معرفی (تنظیمات)')
+#         verbose_name_plural = _('امتیاز معرفی (تنظیمات)')
 
 
 class AppUpdate(models.Model):
@@ -165,5 +176,39 @@ class AppUpdate(models.Model):
     link = models.CharField(max_length=300, null=True, blank=True, verbose_name=_('لینک آپدیت'))
 
     class Meta:
-        verbose_name = _('برروزرسانی')
-        verbose_name_plural = _('برروزرسانی')
+        verbose_name = _('برروزرسانی (تنظیمات)')
+        verbose_name_plural = _('برروزرسانی (تنظیمات)')
+        ordering = ('value',)
+
+    def __str__(self):
+        return self.link
+
+
+class PointGainHistory(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
+    action = models.CharField(max_length=300, null=False, blank=False, verbose_name=_('عملیات'))
+    point = models.PositiveSmallIntegerField(_('امتیاز'), default=0)
+    date_created = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('تاریخجه کسب امتیاز')
+        verbose_name_plural = _('تاریخجه های کسب امتیاز')
+        ordering = ('date_created',)
+
+    def __str__(self):
+        return self.user.__str__()
+
+
+class AppSettings(models.Model):
+    ticket_answer_limit = models.PositiveSmallIntegerField(default=6, verbose_name=_('محدودیت تعداد پاسخ تیکت'))
+    ticket_cost = models.PositiveSmallIntegerField(default=5, verbose_name=_('هزینه پرسش از طریق تیکت'))
+    comment_point = models.PositiveSmallIntegerField(default=1, verbose_name=_('امتیاز ثبت کامنت'))
+    support_answer_limit = models.PositiveSmallIntegerField(default=6,
+                                                            verbose_name=_('محدودیت تعداد پاسخ تیکت پشتیبانی'))
+    profile_completion_point = models.PositiveSmallIntegerField(default=10, verbose_name=_('امتیاز تکمیل پروفایل'))
+    activity_point = models.PositiveSmallIntegerField(default=1, verbose_name=_('امتیاز فعالیت'))
+    referral_point = models.PositiveSmallIntegerField(default=10, verbose_name=_('امتیاز معرفی دوستان'))
+
+    class Meta:
+        verbose_name = _('تنظیمات اپلیکیشن')
+        verbose_name_plural = _('تنظیمات اپلیکیشن')

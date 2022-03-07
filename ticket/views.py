@@ -3,7 +3,7 @@ import datetime
 
 from ehyasalamat.permission_check import ticket_permission_checker
 from push_notification.main import PushThread
-from .models import Ticket, TicketPointCost, Section
+from .models import Ticket, Section
 from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer
 from .permissions import IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
@@ -13,7 +13,7 @@ from .utils import not_reached_answer_limit
 from django.contrib.auth import get_user_model
 
 # Rest Framework imports
-from rest_framework.decorators import api_view, permission_classes, authentication_classes, renderer_classes
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework import generics
 from rest_framework.generics import get_object_or_404, CreateAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -148,9 +148,10 @@ def seen_by_user(request):
         if request.user == ticket.user:
             answers = ticket.answer_set.filter(status='2')
             for answer in answers:
-                answer.status = '1'
-                answer.seen_at = datetime.datetime.now()
-                answer.save()
+                if answer.user != request.user:
+                    answer.status = '1'
+                    answer.seen_at = datetime.datetime.now()
+                    answer.save()
             return Response({'isDone': True}, status=HTTP_200_OK)
 
 

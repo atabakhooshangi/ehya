@@ -2,7 +2,13 @@ from django.db import models
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext as _
-from accounts.models import User
+from accounts.models import User , Role
+
+TYPE_CHOICES = (
+    ('1', 'شخصی'),
+    ('2', 'عمومی'),
+    ('3', 'اختصاصی'),
+)
 
 
 def upload_location(instance, filename):
@@ -28,9 +34,11 @@ class SendPush(models.Model):
     title = models.CharField(_('عنوان'), max_length=120, null=False, blank=False)
     body = models.TextField(_('متن'))
     image = models.ImageField(_('تصویر'), upload_to=upload_location)
-    receptors = models.ManyToManyField(to=User, blank=True, verbose_name=_('گیرندگان'))
-    send_to_all = models.BooleanField(default=False, verbose_name=_('ارسال همگانی'), help_text=_(
-        'اگر انتخاب شود این پوش نوتیفیکیشن به تمام کاربران اپلیکیشن ارسال خواهد شد.'))
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name=_('کاربر مخاطب'),
+                             help_text=_('اگر نوع اطلاعیه شخصی باشد نیاز است کاربر مخاطب مشخص شود'), null=True,
+                             blank=True)
+    roles = models.ManyToManyField(to=Role, blank=True, verbose_name=_('نقش های گیرندگان'))
+    inf_type = models.CharField(_('نوع'), max_length=2, choices=TYPE_CHOICES, default='2')
     date_created = models.DateTimeField(_('تاریخ ایجاد'), auto_now_add=True)
 
     class Meta:

@@ -1,17 +1,13 @@
-from django.core import exceptions
-from django.contrib.auth.views import get_user_model
-from django.db import IntegrityError
 from django.utils.translation import ugettext as _
 from rest_framework import serializers
 import base64
 from django.core.files.base import ContentFile
-from jalali_date import datetime2jalali, date2jalali
-from rest_framework.exceptions import PermissionDenied
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from jalali_date import datetime2jalali
+
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
-from .models import Ticket, Answer, TicketPointCost, Section, TicketAnswerLimit
-from .permissions import is_expert
+from .models import Ticket, Answer, Section
+from accounts.models import AppSettings
 
 User = get_user_model()
 
@@ -116,7 +112,7 @@ class TicketCreateSerializer(serializers.ModelSerializer):
                                        request_text=self.validated_data.get('request_text'),
                                        file=data)
         if user.check_point_status_for_ticket:
-            user.points -= TicketPointCost.objects.last().value
+            user.points -= AppSettings.objects.last().ticket_cost
             user.save()
         return ticket
 

@@ -14,7 +14,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from rest_framework.response import Response
 from .utils import get_visitor_ipaddress
-from .models import ProfileCompletionPoints, Role, ActivityPoint, AppUpdate
+from .models import Role,  AppUpdate, PointGainHistory, AppSettings
 
 User = get_user_model()
 
@@ -88,7 +88,7 @@ class UserProfileAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         if instance.profile_done and instance.profile_completion_point == '2':
-            instance.points += ProfileCompletionPoints.objects.last().value
+            instance.points += AppSettings.objects.last().profile_completion_point
             instance.profile_completion_point = '1'
             instance.save()
         return Response(serializer.data)
@@ -107,8 +107,10 @@ class ReferralAPIView(generics.GenericAPIView):
         if user.referral is not None: raise ValidationError(
             {'user': _('کاربر گرامی شما قبلا معرف خود را ثبت کرده اید.')})
         ref_user = User.objects.get(phone_number=data['phone_number'])
-        user.points += 10
+        point_to_add = AppSettings.objects.last().referral_point
+        user.points += point_to_add
         user.referral = ref_user
+        PointGainHistory.objects.create(user=user, action='دعوت از دوستان', point=point_to_add)
         user.save()
 
         ref_user.user_referrals.add(user)
@@ -128,7 +130,11 @@ class GetRolesAPIView(generics.ListAPIView):
 def five_minute_activity_point(request):
     if request.method == 'POST':
         user = request.user
-        user.points += ActivityPoint.objects.last().value
+        point_to_gain = AppSettings.objects.last().activity_point
+        user.points += point_to_gain
+        PointGainHistory.objects.create(user=user,
+                                        action=f'استفاده از اپلیکیشن',
+                                        point=point_to_gain)
         user.save()
         return Response({'isDone': True}, status=HTTP_200_OK)
 
