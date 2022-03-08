@@ -6,15 +6,15 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ehyasalamat.settings')
 
-app = Celery('exchange')
+app = Celery('ehyasalamat')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
-    # '10m': {
-    #     'task': 'datafeed.tasks.create_10m_datafeed',
-    #     'schedule': 3,
-    # },
+    'to_publish': {
+        'task': 'wphome.tasks.check_posts_to_publish',
+        'schedule': 5,
+    },
 
 }
 

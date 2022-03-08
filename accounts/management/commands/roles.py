@@ -1,8 +1,8 @@
 from datetime import datetime, date, time, timezone, timedelta
 from django.core.management.base import BaseCommand, CommandError
-from accounts.models import Role, ProfileCompletionPoints
-from support.models import SupportSection, SupportTicketAnswerLimit
-from ticket.models import Section, TicketAnswerLimit, TicketPointCost
+from accounts.models import Role, AppSettings
+from support.models import SupportSection
+
 from django.contrib.auth.views import get_user_model
 
 User = get_user_model()
@@ -24,13 +24,8 @@ class Command(BaseCommand):
         for k in Support_Sections_List:
             SupportSection.objects.create(name=k)
 
-        ProfileCompletionPoints.objects.create(value=10)
-        SupportTicketAnswerLimit.objects.create(value=3)
-        TicketAnswerLimit.objects.create(value=3)
-        TicketPointCost.objects.create(value=5)
-
+        AppSettings.objects.create()
         admin_user = User.objects.create_superuser(phone_number='09121111111', password='1')
-        admin_user.role = Role.objects.get(name='مدیر کل')
         admin_user.save()
 
         self.stdout.write(self.style.SUCCESS(f'Successfully Created Roles'))

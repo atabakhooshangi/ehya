@@ -100,10 +100,13 @@ WSGI_APPLICATION = 'ehyasalamat.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        # 'CONN_MAX_AGE': 1800  # 30 minutes
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ehya',
+        'USER': 'ehyauser',
+        'PASSWORD': '@#ehyasalamat1400',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 }
 
 # Password validation

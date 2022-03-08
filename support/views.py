@@ -7,14 +7,13 @@ from .models import SupportTicket, SupportSection
 from .serializers import SupportTicketSerializer, GetSupportTicketSerializer, SupportAnswerSerializer, \
     SupportSectionSerializer
 from .utils import reached_support_answer_limit
-from ticket.permissions import is_expert, IsOwner, IsExpert, IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
 from .permissions import IsSupportAdminOrOwner
 
 # Rest Framework imports
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework import generics
-from rest_framework.generics import get_object_or_404, CreateAPIView
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response

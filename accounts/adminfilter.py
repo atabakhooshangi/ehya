@@ -15,6 +15,8 @@ class UserRoleFilter(admin.SimpleListFilter):
                  'role__name')]
         t = ('all', f'همه ({qs.count()})')
         a.insert(0, t)
+        if a[1][0] is None:
+            a.pop(1)
         return a
 
     def choices(self, changelist):

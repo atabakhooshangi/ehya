@@ -66,9 +66,8 @@ class UserAdmin(admin.ModelAdmin):
 
     change_button.short_description = _('ویرایش')
     delete_button.short_description = _('حذف')
-    list_display = ['change_button', 'phone_number', 'is_active', 'is_admin', 'is_staff', 'is_superuser',
+    list_display = ['change_button', 'phone_number', 'is_active', 'roles_name',
                     'get_created_jalali', 'delete_button']
-    list_editable = ['is_active', 'is_admin', 'is_staff', 'is_superuser']
     list_filter = [UserRoleFilter, ('date_joined', DateRangeFilter), UserActiveFilter]
     search_fields = ['phone_number', 'first_name', 'role']
     filter_horizontal = ['role', 'user_referrals']
@@ -105,6 +104,16 @@ class UserAdmin(admin.ModelAdmin):
 
     ]
 
+    def roles_name(self, obj):
+        roles_list = []
+        roles = obj.role.all()
+        for role in roles:
+            roles_list.append(role.name)
+        output = ' , '.join(roles_list)
+        return output
+
+    roles_name.short_description = _('نقش های کاربر')
+
     def get_referral_count(self, obj):
         return obj.user_referrals.all().count()
 
@@ -120,51 +129,8 @@ class UserAdmin(admin.ModelAdmin):
         if request.user.is_staff:
             return True
 
-    # select_users_for_sms.short_description = _('انتخاب کاربران جهت ارسال پیامک')
     get_referral_count.short_description = _('تعداد معرفی')
     get_role_count.short_description = _('تعداد نقش ها')
-
-
-# @admin.register(models.ProfileCompletionPoints)
-# class ProfileCompletionPointsAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'value']
-#     list_editable = ['value']
-#
-#     def has_add_permission(self, request):
-#         related_per = 'accounts.add_profilecompletionpoints'
-#         if self.model.objects.count() >= 1:
-#             return False
-#         elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
-#             return True
-#
-#     def has_change_permission(self, request, obj=None):
-#         related_per = 'accounts.change_profilecompletionpoints'
-#         return role_permission_checker(related_per, request.user)
-#
-#     def has_view_permission(self, request, obj=None):
-#         related_per = 'accounts.view_profilecompletionpoints'
-#         return role_permission_checker(related_per, request.user)
-
-
-# @admin.register(models.ActivityPoint)
-# class ActivityPointsAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'value']
-#     list_editable = ['value']
-#
-#     def has_add_permission(self, request):
-#         related_per = 'accounts.add_activitypoint'
-#         if self.model.objects.count() >= 1:
-#             return False
-#         elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
-#             return True
-#
-#     def has_change_permission(self, request, obj=None):
-#         related_per = 'accounts.add_activitypoint'
-#         return role_permission_checker(related_per, request.user)
-#
-#     def has_view_permission(self, request, obj=None):
-#         related_per = 'accounts.add_activitypoint'
-#         return role_permission_checker(related_per, request.user)
 
 
 @admin.register(models.AppUpdate)
@@ -269,3 +235,11 @@ class AppSettingsAdmin(admin.ModelAdmin):
 admin.site.register(LogEntry)
 admin.site.unregister(Group)
 admin.site.site_header = 'پنل مدیریت احیا سلامت'
+
+
+
+
+
+
+
+

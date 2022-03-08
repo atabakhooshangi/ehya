@@ -19,3 +19,4 @@ django-mptt
 fcm-django==1.0.6
 six==1.15.0
 django-tinymce
+gevent
