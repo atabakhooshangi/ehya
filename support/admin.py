@@ -142,6 +142,7 @@ class SupportSectionAdmin(admin.ModelAdmin):
 
     change_button.short_description = _('ویرایش')
     delete_button.short_description = _('حذف')
+    filter_horizontal = ['associated_roles']
     list_display = ['change_button', 'name', 'active', 'delete_button']
 
     def has_add_permission(self, request):
