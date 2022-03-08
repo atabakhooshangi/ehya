@@ -5,7 +5,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Permi
 from django.utils.translation import ugettext as _
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
 GENDER_CHOICES = (
     ('مرد', 'مرد'),
     ('زن', 'زن'),
@@ -181,7 +180,7 @@ class AppUpdate(models.Model):
         ordering = ('value',)
 
     def __str__(self):
-        return self.link
+        return str(self.id)
 
 
 class PointGainHistory(models.Model):
