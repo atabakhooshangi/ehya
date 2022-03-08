@@ -8,6 +8,7 @@ from rangefilter.filters import DateRangeFilter
 from jalali_date import datetime2jalali
 from ehyasalamat.permission_check import role_permission_checker
 from django.contrib.admin.models import LogEntry
+from django.contrib.sites.models import Site
 
 
 @admin.register(models.Role)
@@ -234,12 +235,5 @@ class AppSettingsAdmin(admin.ModelAdmin):
 
 admin.site.register(LogEntry)
 admin.site.unregister(Group)
+admin.site.unregister(Site)
 admin.site.site_header = 'پنل مدیریت احیا سلامت'
-
-
-
-
-
-
-
-
