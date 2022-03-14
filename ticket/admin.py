@@ -109,7 +109,7 @@ class TicketAdmin(admin.ModelAdmin):
         if obj.file:
             return format_html(f"<a href='{obj.file.url}' target='_blank'>مشاهده فایل</a>")
             # return format_html(f"<audio controls> <source src='{obj.file.url}'/>مشاهده فایل</audio>")
-        return "فایلی آپلود نشده است"
+        return "موردی یافت نشد"
 
     def get_created_jalali(self, obj):
         return datetime2jalali(obj.created_at).strftime('%y/%m/%d _ %H:%M:%S')

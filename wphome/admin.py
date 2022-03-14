@@ -72,8 +72,10 @@ class PostAdmin(admin.ModelAdmin):
         return output
 
     def audio_preview(self, obj):
-        return mark_safe(
-            f'<audio controls><source src={obj.file.url} preload="auto" type="audio/mpeg">فایل ساپورت نمیشود</audio>')
+        if obj.file:
+            return mark_safe(
+                f'<audio controls><source src={obj.file.url} preload="auto" type="audio/mpeg">فایل ساپورت نمیشود</audio>')
+        return "موردی یافت نشد"
 
     audio_preview.short_description = 'پیش نمایش صوت'
 
@@ -246,6 +248,16 @@ class CommentAdmin(MPTTModelAdmin):
     actions = ['approve_multiple_comments']
     list_filter = [CommentApprovedFilter]
     search_fields = ['user__phone_number', 'user__first_name', 'user__last_name']
+
+    # TinyMCE
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'text':
+            return db_field.formfield(widget=TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
+            ))
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     # fieldsets
     def parent_text(self, obj):

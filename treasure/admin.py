@@ -42,7 +42,7 @@ class TreasuryAdmin(admin.ModelAdmin):
             if obj.file.name.endswith(('.jpeg', '.png', '.svg', 'webp')):
                 return mark_safe('<img src="{}" width="280" height="200" />'.format(obj.file.url))
             return ""
-
+        return "موردی یافت نشد"
     def file_link(self, obj):
         if obj.file:
             return format_html(f"<a href='{obj.file.url}' target='_blank'>مشاهده فایل</a>")

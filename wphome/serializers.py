@@ -29,7 +29,9 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'text', 'date_created', 'children')
 
     def get_user(self, obj):
-        return obj.user.first_name
+        if obj.user.first_name and obj.user.last_name:
+            return f'{obj.user.first_name} {obj.user.last_name}'
+        return 'کاربر احیاء سلامت'
 
     def get_date_created(self, obj):
         return datetime2jalali(obj.date_created).strftime('%y/%m/%d _ %H:%M:%S')

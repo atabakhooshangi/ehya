@@ -125,7 +125,7 @@ class Post(models.Model):
     def thumbnail_preview(self):
         if self.image:
             return mark_safe('<img src="{}" width="280" height="200" />'.format(self.image.url))
-        return ""
+        return "موردی یافت نشد"
 
 
 @receiver(pre_save, sender=Post)

@@ -122,13 +122,13 @@ class InformAdmin(admin.ModelAdmin):
 
     # TinyMCE
 
-    # def formfield_for_dbfield(self, db_field, **kwargs):
-    #     if db_field.name == 'text':
-    #         return db_field.formfield(widget=TinyMCE(
-    #             attrs={'cols': 80, 'rows': 30},
-    #             mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
-    #         ))
-    #     return super().formfield_for_dbfield(db_field, **kwargs)
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'text':
+            return db_field.formfield(widget=TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
+            ))
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)

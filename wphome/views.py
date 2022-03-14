@@ -98,7 +98,6 @@ class PostRetrieveAPIView(generics.RetrieveAPIView):
         return context
 
     def get_object(self):
-        print(self.kwargs['pk'])
         return get_object_or_404(Post, id=self.kwargs['pk'], status='1')
 
 
@@ -120,7 +119,6 @@ class DeleteCommentAPIView(generics.DestroyAPIView):
     queryset = Comment.objects.all()
 
     def get_object(self):
-        print(self.kwargs['pk'])
         return get_object_or_404(Comment, id=self.kwargs['pk'])
 
     def destroy(self, request, *args, **kwargs):
@@ -178,7 +176,6 @@ class AddPostToViewsAPIView(APIView):
         post = get_object_or_404(Post, id=post_id)
 
         if not post.views.filter(id=request.user.id).exists():
-            print('inja')
             post.views.add(request.user)
 
         return Response({'isDone': True}, status=HTTP_200_OK)
