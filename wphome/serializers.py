@@ -75,7 +75,7 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             'id', 'title', 'categories', 'image', 'file', 'share_link', 'liked', 'likes_count', 'views_count',
-            'favorite', 'short_description', 'tags', 'link_tv', 'radio_ehya', 'ehya_tv', 'special_post',
+            'favorite', 'short_description', 'description', 'tags', 'link_tv', 'radio_ehya', 'ehya_tv', 'special_post',
             'comments', 'date_published')
 
     def get_likes_count(self, obj):
@@ -124,7 +124,7 @@ class PostsListSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             'id', 'title', 'categories', 'image', 'file', 'share_link', 'liked', 'likes_count', 'views_count',
-            'favorite', 'short_description', 'tags', 'link_tv', 'radio_ehya', 'ehya_tv', 'special_post',
+            'favorite', 'short_description', 'description', 'tags', 'link_tv', 'radio_ehya', 'ehya_tv', 'special_post',
             'date_published')
 
     def get_favorite(self, obj):
