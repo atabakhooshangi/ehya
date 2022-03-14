@@ -90,6 +90,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to=upload_image_location, verbose_name=_('تصویر پست'), null=True, blank=True)
     file = models.FileField(upload_to=upload_audo_file_location, verbose_name=_('فایل صوتی'), null=True, blank=True)
     short_description = models.TextField(verbose_name=_('خلاصه مطلب'))
+    description = models.TextField(verbose_name=_('متن کامل مطلب'), null=True)
     likes = models.ManyToManyField(to=User, blank=True, verbose_name=_('لایک ها'), related_name='likes')
     share_link = models.CharField(_('لینک اشتراک گذاری'), max_length=250, null=True, blank=True)
     push_notif_description = models.TextField(verbose_name=_('توضیح مختصر پوش نوتیفیکیشن'))

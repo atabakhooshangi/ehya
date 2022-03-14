@@ -7,6 +7,8 @@ from jalali_date import datetime2jalali, date2jalali
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from django.utils.html import format_html
 from django.contrib import admin
+from django.urls import reverse
+from tinymce.widgets import TinyMCE
 
 
 @admin.register(models.Treasury)
@@ -89,6 +91,14 @@ class TreasureAnswerAdmin(admin.ModelAdmin):
             return False
         elif self.model.objects.count() < 1 and role_permission_checker(related_per, request.user):
             return True
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'text':
+            return db_field.formfield(widget=TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
+            ))
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     def has_change_permission(self, request, obj=None):
         related_per = 'treasure.change_treasureanswer'

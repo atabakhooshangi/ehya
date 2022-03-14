@@ -8,6 +8,8 @@ from jalali_date import datetime2jalali
 from rangefilter.filters import DateRangeFilter
 from django.utils.html import format_html
 from .admin_filter import SupportTicketSectionFilter, SupportTicketStatusFilter
+from django.urls import reverse
+from tinymce.widgets import TinyMCE
 
 
 class SupportAnswerInLine(admin.TabularInline):
@@ -55,15 +57,23 @@ class SupportTicketAdmin(admin.ModelAdmin):
     search_fields = ['topic', 'user__phone_number', 'user__first_name', 'user__last_name', 'section']
     raw_id_fields = ['user']
     inlines = [SupportAnswerInLine]
-    readonly_fields = ['get_created_jalali','id']
+    readonly_fields = ['get_created_jalali', 'id']
 
     fieldsets = [
         ('موضوع و شناسه', {
-            'fields': ('topic','id')
+            'fields': ('topic', 'id')
         }),
         ('مشخصات کلی', {
-            'fields': ('user', 'section', 'request_text', 'status_for_user', 'status_for_support','get_created_jalali')
+            'fields': ('user', 'section', 'request_text', 'status_for_user', 'status_for_support', 'get_created_jalali')
         })]
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'request_text':
+            return db_field.formfield(widget=TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
+            ))
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     def save_formset(self, request, form, formset, change):
         user = form.cleaned_data['user']
@@ -160,4 +170,3 @@ class SupportSectionAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         related_per = 'support.delete_supportsection'
         return role_permission_checker(related_per, request.user)
-

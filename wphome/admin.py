@@ -88,7 +88,7 @@ class PostAdmin(admin.ModelAdmin):
     fieldsets = [
         ('وارد کردن عناوین و متون پست', {
             'fields': (
-                'title', 'categories', "short_description", "share_link",)}),
+                'title', 'categories', "short_description", "description", "share_link",)}),
         ('تصویر پست', {
             'fields': (
                 'image', 'thumbnail_preview',)}),
@@ -136,13 +136,13 @@ class PostAdmin(admin.ModelAdmin):
 
     # Tiny MCE
 
-    # def formfield_for_dbfield(self, db_field, **kwargs):
-    #     if db_field.name == 'short_description':
-    #         return db_field.formfield(widget=TinyMCE(
-    #             attrs={'cols': 80, 'rows': 30},
-    #             mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
-    #         ))
-    #     return super().formfield_for_dbfield(db_field, **kwargs)
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'short_description' or db_field.name == 'description':
+            return db_field.formfield(widget=TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
+            ))
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     def thumbnail_preview(self, obj):
         return obj.thumbnail_preview

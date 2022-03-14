@@ -9,6 +9,8 @@ from django.utils.html import format_html
 from push_notification.main import PushThread
 from django.utils.translation import ugettext as _
 from .admin_filter import TicketExpertStatusSerializer, TicketSectionFilter
+from django.urls import reverse
+from tinymce.widgets import TinyMCE
 
 
 # class TicketUserStatusSerializer(admin.SimpleListFilter):
@@ -114,6 +116,14 @@ class TicketAdmin(admin.ModelAdmin):
 
     get_created_jalali.short_description = 'تاریخ ایجاد'
 
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'request_text':
+            return db_field.formfield(widget=TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'external_link_list_url': reverse('tinymce-linklist')},
+            ))
+        return super().formfield_for_dbfield(db_field, **kwargs)
+
     def has_add_permission(self, request, obj=None):
         related_per = 'ticket.add_ticket'
         return role_permission_checker(related_per, request.user)
@@ -200,8 +210,6 @@ class TicketAdmin(admin.ModelAdmin):
 #             return True
 
 
-
-
 @admin.register(models.Section)
 class SectionAdmin(admin.ModelAdmin):
 
@@ -220,5 +228,3 @@ class SectionAdmin(admin.ModelAdmin):
     list_display = ['change_button', 'name', 'delete_button']
     list_editable = ['name']
     search_fields = ['name']
-
-
