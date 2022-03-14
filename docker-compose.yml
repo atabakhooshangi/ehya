@@ -6,9 +6,9 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis
+    container_name: ehya_redis
     ports:
-    - "6379:6379"
+      - "6379:6379"
 
     networks:
       forum_net:
@@ -18,10 +18,10 @@ services:
   db:
     image: postgres
     volumes:
-    - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
-    - ./db:/var/lib/postgresql/data
+      - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - ./db:/var/lib/postgresql/data
 
-    container_name: postgres_db
+    container_name: ehya_postgres_db
 
     ports:
       - "5432:5432"
@@ -36,11 +36,12 @@ services:
     build:
       context: .
     volumes:
-    - .:/ehyasalamat
-    - static:/ehyasalamat/static
-    - media:/ehyasalamat/media
+      - .:/ehyasalamat
+      - static:/ehyasalamat/static
+      - media:/ehyasalamat/media
     ports:
-    - 8000:8000
+      - 8000:8000
+    container_name: Ehya
     depends_on:
       - db
     networks:
@@ -50,27 +51,28 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgAdmin
+    container_name: EhyapgAdmin
     restart: always
     environment:
       - PGADMIN_DEFAULT_EMAIL=root@root.com
       - PGADMIN_DEFAULT_PASSWORD=root
 
     ports:
-    - "5050:80"
+      - "5050:80"
     networks:
       forum_net:
         ipv4_address: 192.168.0.5
 
 
   proxy:
-    build: ./nginx
+    build: ./proxy
     ports:
-    - "80:80"
+      - "80:80"
+      - "443:443"
 
     volumes:
-    - static:/static
-    - media:/media
+      - static:/static
+      - media:/media
     networks:
       forum_net:
         ipv4_address: 192.168.0.6

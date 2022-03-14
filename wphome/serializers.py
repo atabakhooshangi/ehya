@@ -13,12 +13,10 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecursiveField(serializers.Serializer):
     def to_representation(self, value):
-        serializer = self.parent.parent.__class__(value, context=self.context)
-        return serializer.data
-        # if value.approved:
-        #     serializer = self.parent.parent.__class__(value, context=self.context)
-        #     return serializer.data
-        # return "None"
+        if value.approved:
+            serializer = self.parent.parent.__class__(value, context=self.context)
+            return serializer.data
+        return "None"
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -65,7 +63,7 @@ class SingleCategorySerializer(serializers.ModelSerializer):
 
 class PostsRetrieveSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
-    category = serializers.SerializerMethodField()
+    categories = serializers.SerializerMethodField()
     date_published = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
     liked = serializers.SerializerMethodField()
@@ -76,7 +74,7 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'category', 'image', 'file', 'share_link', 'liked', 'likes_count', 'views_count',
+            'id', 'title', 'categories', 'image', 'file', 'share_link', 'liked', 'likes_count', 'views_count',
             'favorite', 'short_description', 'tags', 'link_tv', 'radio_ehya', 'ehya_tv', 'special_post',
             'comments', 'date_published')
 
@@ -91,12 +89,12 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
             return True
         return False
 
-    def get_category(self, obj):
+    def get_categories(self, obj):
         categories = obj.categories.all()
         resp = []
         for category in categories:
             resp.append(category.name)
-        return resp[0]
+        return resp
 
     def get_favorite(self, obj):
         if self.context.get('user') in obj.favorite.all():
@@ -115,7 +113,7 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
 
 class PostsListSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
-    category = serializers.SerializerMethodField()
+    categories = serializers.SerializerMethodField()
     date_published = serializers.SerializerMethodField()
     liked = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
@@ -125,7 +123,7 @@ class PostsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
-            'id', 'title', 'category', 'image', 'file', 'share_link', 'liked', 'likes_count', 'views_count',
+            'id', 'title', 'categories', 'image', 'file', 'share_link', 'liked', 'likes_count', 'views_count',
             'favorite', 'short_description', 'tags', 'link_tv', 'radio_ehya', 'ehya_tv', 'special_post',
             'date_published')
 
@@ -134,15 +132,14 @@ class PostsListSerializer(serializers.ModelSerializer):
             return True
         return False
 
-    def get_category(self, obj):
+    def get_categories(self, obj):
         categories = obj.categories.all()
         resp = []
         for category in categories:
             resp.append(category.name)
-        return resp[0]
+        return resp
 
     def get_views_count(self, obj):
-        print('inja')
         return obj.views.count()
 
     def get_likes_count(self, obj):

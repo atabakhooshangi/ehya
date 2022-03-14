@@ -8,6 +8,11 @@
 # Icon must end with two \r
 Icon
 
+# Docker Stuff
+
+proxy
+includes
+ssl
 
 # Thumbnails
 ._*
