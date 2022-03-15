@@ -48,6 +48,12 @@ def upload_thumbnail_location(instance, filename):
     return f'uploads/push_notif_thumbnails/{filename}'
 
 
+def upload_icon_location(instance, filename):
+    # extension = filename.split('.')[-1]
+    # return f'uploads/push_notif_thumbnails/Post_thumbnail_{instance.title}.{extension}'
+    return f'uploads/category_icons/{filename}'
+
+
 class CategoryManager(TreeManager):
     def viewable(self):
         queryset = self.get_queryset().filter(level=0)
@@ -56,6 +62,9 @@ class CategoryManager(TreeManager):
 
 class Category(MPTTModel):
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('نام'))
+    icon = models.ImageField(upload_to=upload_icon_location, verbose_name=_('آیکون'), null=True, blank=True)
+    code_1 = models.CharField(_('کد رنگ 1'), max_length=20, null=True, blank=True)
+    code_2 = models.CharField(_('کد رنگ 1'), max_length=20, null=True, blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
                             verbose_name=_('والد'))
 

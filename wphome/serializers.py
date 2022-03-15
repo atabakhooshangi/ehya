@@ -19,6 +19,12 @@ class RecursiveField(serializers.Serializer):
         return "None"
 
 
+class CategoryRecursiveField(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+
 class CommentSerializer(serializers.ModelSerializer):
     children = RecursiveField(many=True)
     user = serializers.SerializerMethodField()
@@ -50,17 +56,17 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    children = RecursiveField(many=True)
+    children = CategoryRecursiveField(many=True)
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'children')
+        fields = ('id', 'name', 'icon', 'code_1', 'code_2', 'children')
 
 
 class SingleCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'icon', 'code_1', 'code_2')
 
 
 class PostsRetrieveSerializer(serializers.ModelSerializer):
@@ -93,10 +99,7 @@ class PostsRetrieveSerializer(serializers.ModelSerializer):
 
     def get_categories(self, obj):
         categories = obj.categories.all()
-        resp = []
-        for category in categories:
-            resp.append(category.name)
-        return resp
+        return SingleCategorySerializer(categories, many=True).data
 
     def get_favorite(self, obj):
         if self.context.get('user') in obj.favorite.all():
@@ -136,10 +139,7 @@ class PostsListSerializer(serializers.ModelSerializer):
 
     def get_categories(self, obj):
         categories = obj.categories.all()
-        resp = []
-        for category in categories:
-            resp.append(category.name)
-        return resp
+        return SingleCategorySerializer(categories, many=True).data
 
     def get_views_count(self, obj):
         return obj.views.count()
