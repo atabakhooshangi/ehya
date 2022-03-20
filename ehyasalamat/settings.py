@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xo-4@#gl^ose#qf=)0*0^u58gk9$^@55t8noom^ny60&qymn72'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -106,7 +106,7 @@ DATABASES = {
         # 'PASSWORD': 'postgres',
         'USER': 'ehyauser',
         'PASSWORD': '@#ehyasalamat1400',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     },
 }
@@ -223,38 +223,6 @@ CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
-# JET_THEMES = [
-#     {
-#         'theme': 'default', # theme folder name
-#         'color': '#47bac1', # color of the theme's button in user menu
-#         'title': 'Default' # theme title
-#     },
-#     {
-#         'theme': 'green',
-#         'color': '#44b78b',
-#         'title': 'Green'
-#     },
-#     {
-#         'theme': 'light-green',
-#         'color': '#2faa60',
-#         'title': 'Light Green'
-#     },
-#     {
-#         'theme': 'light-violet',
-#         'color': '#a464c4',
-#         'title': 'Light Violet'
-#     },
-#     {
-#         'theme': 'light-blue',
-#         'color': '#5EADDE',
-#         'title': 'Light Blue'
-#     },
-#     {
-#         'theme': 'light-gray',
-#         'color': '#222',
-#         'title': 'Light Gray'
-#     }
-# ]
 
 LOGGING = {
     'version': 1,

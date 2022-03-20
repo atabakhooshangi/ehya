@@ -10,7 +10,7 @@ Icon
 
 # Docker Stuff
 
-proxy
+
 includes
 ssl
 
@@ -93,3 +93,5 @@ local_settings.py
 .env
 db.sqlite3
 .sqlite3
+
+supervisord.pid

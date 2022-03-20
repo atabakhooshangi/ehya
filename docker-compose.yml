@@ -12,7 +12,7 @@ services:
 
     networks:
       forum_net:
-        ipv4_address: 192.168.0.2
+        ipv4_address: 192.167.0.2
 
 
   db:
@@ -21,6 +21,10 @@ services:
       - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
       - ./db:/var/lib/postgresql/data
 
+    environment:
+      - POSTGRES_DB=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     container_name: ehya_postgres_db
 
     ports:
@@ -29,7 +33,7 @@ services:
 
     networks:
       forum_net:
-        ipv4_address: 192.168.0.3
+        ipv4_address: 192.167.0.3
 
 
   app:
@@ -46,7 +50,7 @@ services:
       - db
     networks:
       forum_net:
-        ipv4_address: 192.168.0.4
+        ipv4_address: 192.167.0.4
     restart: on-failure
 
   pgadmin:
@@ -61,21 +65,20 @@ services:
       - "5050:80"
     networks:
       forum_net:
-        ipv4_address: 192.168.0.5
+        ipv4_address: 192.167.0.5
 
 
   proxy:
     build: ./proxy
     ports:
       - "80:80"
-      - "443:443"
 
     volumes:
       - static:/static
       - media:/media
     networks:
       forum_net:
-        ipv4_address: 192.168.0.6
+        ipv4_address: 192.167.0.6
 
     depends_on:
       - app
@@ -86,8 +89,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: "192.168.0.0/24"
-          gateway: "192.168.0.1"
+        - subnet: "192.167.0.0/24"
+          gateway: "192.167.0.1"
 
 
 volumes:
