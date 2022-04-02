@@ -72,10 +72,13 @@ services:
     build: ./proxy
     ports:
       - "80:80"
+      - "443:443"
 
     volumes:
       - static:/static
       - media:/media
+      - ./certbot/www:/var/www/certbot/
+      - ./certbot/conf/:/etc/letsencrypt/
     networks:
       forum_net:
         ipv4_address: 192.167.0.6
@@ -84,6 +87,11 @@ services:
       - app
     restart: on-failure
 
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/
+      - ./certbot/conf/:/etc/letsencrypt/
 networks:
   forum_net:
     ipam:
