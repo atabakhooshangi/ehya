@@ -77,8 +77,6 @@ services:
     volumes:
       - static:/static
       - media:/media
-      - ./certbot/www:/var/www/certbot/
-      - ./certbot/conf/:/etc/letsencrypt/
     networks:
       forum_net:
         ipv4_address: 192.167.0.6
@@ -87,12 +85,7 @@ services:
       - app
     restart: on-failure
 
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email doom_horn@yahoo.com -d atabakhooshangi.ir --agree-tos
+
 networks:
   forum_net:
     ipam:
