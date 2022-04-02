@@ -106,7 +106,7 @@ DATABASES = {
         # 'PASSWORD': 'postgres',
         'USER': 'ehyauser',
         'PASSWORD': '@#ehyasalamat1400',
-        'HOST': 'ehya_postgres_db',
+        'HOST': '192.167.0.3',
         'PORT': '5432',
     },
 }
