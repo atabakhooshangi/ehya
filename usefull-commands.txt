@@ -1,1 +1,2 @@
 celery -A ehyasalamat worker --pool=gevent --loglevel=DEBUG
+python manage.py dumpdata --indent 4 app.model(e.g auth.user) > whatever.json

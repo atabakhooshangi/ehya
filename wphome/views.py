@@ -181,13 +181,13 @@ class AddPostToViewsAPIView(APIView):
         return Response({'isDone': True}, status=HTTP_200_OK)
 
 
-# class UserFavoritePostsAPIView(generics.ListAPIView):
-#     serializer_class = PostsListSerializer
-#     renderer_classes = [Renderer]
-#     permission_classes = [IsAuthenticated]
-#
-#     def get_queryset(self):
-#         return Post.objects.filter(favorite__in=[self.request.user])
+class UserFavoritePostsAPIView(generics.ListAPIView):
+    serializer_class = PostsListSerializer
+    renderer_classes = [Renderer]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Post.objects.filter(favorite__in=[self.request.user])
 
 
 # class GetUserSearchHistory(generics.GenericAPIView):

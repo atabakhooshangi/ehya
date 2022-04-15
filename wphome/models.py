@@ -25,7 +25,7 @@ class PostManager(models.Manager):
                 Q(title__icontains=query) |
                 Q(short_description__icontains=query) |
                 Q(tags__name__icontains=query) |
-                Q(category__name__icontains=query)
+                Q(categories__name__icontains=query)
         )
         return self.get_queryset().filter(lookup, status='1').distinct()
 
