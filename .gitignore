@@ -28,11 +28,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-## celery
-
-celerybeat-schedule.bak
-celerybeat-schedule.dat
-celerybeat-schedule.dir
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
