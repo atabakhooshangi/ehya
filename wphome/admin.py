@@ -173,7 +173,7 @@ class PostAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         photo_url = upload_thumbnail_location(obj, str(obj.push_notif_thumbnail))
         url = 'http://' + get_current_site(request).domain + settings.MEDIA_URL + photo_url
-        if obj.send_push:
+        if obj.send_push and obj.status != '5':
             PushThread(section='home', title=obj.title, body=obj.push_notif_description,
                        push_type='all',
                        image=str(url)).start()
