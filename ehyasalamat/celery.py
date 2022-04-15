@@ -13,7 +13,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.beat_schedule = {
     'to_publish': {
         'task': 'wphome.tasks.check_posts_to_publish',
-        'schedule': 5,
+        'schedule': 300,
     },
 
 }
