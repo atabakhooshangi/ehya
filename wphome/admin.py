@@ -79,18 +79,18 @@ class PostAdmin(admin.ModelAdmin):
 
     audio_preview.short_description = 'پیش نمایش صوت'
 
-    list_display = ['change_button', 'title', 'truncated_short_desc', 'categories_name', 'status', 'delete_button']
+    list_display = ['change_button', 'title', 'description','truncated_short_desc', 'categories_name', 'status', 'delete_button']
     filter_horizontal = ['tags', 'likes', 'views', 'favorite', 'categories']
     search_fields = ['title', 'categories__name', 'tags__name']
     list_filter = [PostCategoryFilter, InformsInfTypeSerializer]
     inlines = [CommentInLine]
     readonly_fields = (
         'thumbnail_preview', 'get_likes_count', 'get_views_count', 'get_favorite_count', 'date_created',
-        'audio_preview')
+        'audio_preview','id')
     fieldsets = [
         ('وارد کردن عناوین و متون پست', {
             'fields': (
-                'title', 'categories', "short_description", "description", "share_link",)}),
+                'id','title', 'categories', "short_description", "description", "share_link",)}),
         ('تصویر پست', {
             'fields': (
                 'image', 'thumbnail_preview',)}),
@@ -116,7 +116,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': ('favorite', 'get_favorite_count',)
         }),
         ('وضعیت و زمان انتشار', {
-            'fields': ('status', 'date_to_publish', 'date_created')
+            'fields': ('status', 'date_to_publish', 'date_created','special_post')
         }),
     ]
 
@@ -193,6 +193,15 @@ class CategoryAdmin(MPTTModelAdmin):
             '<a class="button" style="background-color:red;" href="/admin/wphome/category/{}/delete/">حذف</a>',
             obj.id)
 
+    def icon_preview(self, obj):
+        return obj.icon_preview
+
+    readonly_fields = ['icon_preview','id']
+    icon_preview.short_description = 'پیش نمایش'
+    fieldsets = [
+        (' ', {
+            'fields': (
+                'id','name', 'icon', 'icon_preview', "code_1", "code_2", "text_color", "parent",)}), ]
     change_button.short_description = _('ویرایش')
     delete_button.short_description = _('حذف')
     list_display = ['change_button', 'name', 'parent', 'delete_button']

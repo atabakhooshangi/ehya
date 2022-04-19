@@ -64,7 +64,8 @@ class Category(MPTTModel):
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('نام'))
     icon = models.ImageField(upload_to=upload_icon_location, verbose_name=_('آیکون'), null=True, blank=True)
     code_1 = models.CharField(_('کد رنگ 1'), max_length=20, null=True, blank=True)
-    code_2 = models.CharField(_('کد رنگ 1'), max_length=20, null=True, blank=True)
+    code_2 = models.CharField(_('کد رنگ 2'), max_length=20, null=True, blank=True)
+    text_color = models.CharField(_('کد رنگ متن'), max_length=20, null=True, blank=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
                             verbose_name=_('والد'))
 
@@ -80,6 +81,11 @@ class Category(MPTTModel):
     def __str__(self):
         return self.name
 
+    @property
+    def icon_preview(self):
+        if self.icon:
+            return mark_safe('<img src="{}" width="200" height="120" />'.format(self.icon.url))
+        return "موردی یافت نشد"
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False, verbose_name=_('برچسب'))
@@ -102,7 +108,7 @@ class Post(models.Model):
     description = models.TextField(verbose_name=_('متن کامل مطلب'), null=True)
     likes = models.ManyToManyField(to=User, blank=True, verbose_name=_('لایک ها'), related_name='likes')
     share_link = models.CharField(_('لینک اشتراک گذاری'), max_length=250, null=True, blank=True)
-    push_notif_description = models.TextField(verbose_name=_('توضیح مختصر پوش نوتیفیکیشن'))
+    push_notif_description = models.TextField(verbose_name=_('توضیح مختصر پوش نوتیفیکیشن'),null=True,blank=True)
     push_notif_thumbnail = models.ImageField(upload_to=upload_thumbnail_location,
                                              verbose_name=_('تصویر پوش نوتیفیکیشن'),
                                              null=True, blank=True)

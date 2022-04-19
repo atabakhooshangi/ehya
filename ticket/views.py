@@ -3,8 +3,8 @@ import datetime
 
 from ehyasalamat.permission_check import ticket_permission_checker
 from push_notification.main import PushThread
-from .models import Ticket, Section
-from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer
+from .models import Ticket, Section, Channels
+from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer, ChannelSerializer
 from .permissions import IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
 from .utils import not_reached_answer_limit
@@ -206,3 +206,15 @@ def ticket_count_api(request):
             'closed': closed
         }
         return Response(data, status=HTTP_200_OK)
+
+
+class ListChannelsAPIView(generics.ListAPIView):
+    serializer_class = ChannelSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Channels.objects.all()
+
+
+class RetrieveChannelsAPIView(generics.RetrieveAPIView):
+    serializer_class = ChannelSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Channels.objects.all()

@@ -6,7 +6,7 @@ from jalali_date import datetime2jalali
 
 from django.contrib.auth.views import get_user_model
 from rest_framework.generics import get_object_or_404
-from .models import Ticket, Answer, Section
+from .models import Ticket, Answer, Section, Channels
 from accounts.models import AppSettings
 
 User = get_user_model()
@@ -169,3 +169,11 @@ class SectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Section
         fields = ['id', 'name']
+
+
+class ChannelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Channels
+        fields = ['id', 'title', 'icon', 'description', 'link', 'back_ground_colour_1', 'back_ground_colour_2']
+
+

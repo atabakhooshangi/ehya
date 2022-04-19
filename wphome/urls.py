@@ -2,15 +2,15 @@ from django.urls import path
 from .views import (CategoryListAPIView, CategoryTreeRetrieveAPIView,
                     CategoryRetrieveAPIView, PostsListView, PostRetrieveAPIView, CreateCommentAPIView,
                     DeleteCommentAPIView,
-                    PostsSearchView, TagListAPIView, AddOrRemovePostToLikesAPIView, #GetUserSearchHistory,
+                    PostsSearchView, TagListAPIView, AddOrRemovePostToLikesAPIView, special_post_indicator,
                     AddOrRemovePostToFavoriteAPIView, AddPostToViewsAPIView , UserFavoritePostsAPIView)
 
 app_name = 'Homes'
 
 urlpatterns = [
     path('category_list', CategoryListAPIView.as_view(), name='Categories'),
-    path('category_tree/<int:id>', CategoryTreeRetrieveAPIView.as_view(), name='Category Tree'),
-    path('category/<int:id>', CategoryRetrieveAPIView.as_view(), name='Category'),
+    path('category_tree/<int:pk>', CategoryTreeRetrieveAPIView.as_view(), name='Category Tree'),
+    path('category/<int:pk>', CategoryRetrieveAPIView.as_view(), name='Category'),
     path('posts_list/<id>', PostsListView.as_view(), name='Post-List'),
     path('favorite_posts', UserFavoritePostsAPIView.as_view(), name='Favorite-Post-List'),
     # path('get_search_history', GetUserSearchHistory.as_view(), name='Get-Search-History'),
@@ -22,5 +22,6 @@ urlpatterns = [
     path('create_comment', CreateCommentAPIView.as_view(), name='Create-Comment'),
     path('delete_comment/<int:pk>', DeleteCommentAPIView.as_view(), name='Delete-Comment'),
     path('tags_list', TagListAPIView.as_view(), name='Tag-List'),
+    path('special_post_indicator/<int:id>', special_post_indicator, name='Special-Post-Indicator'),
 
 ]

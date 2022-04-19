@@ -228,3 +228,8 @@ class SectionAdmin(admin.ModelAdmin):
     list_display = ['change_button', 'name', 'delete_button']
     list_editable = ['name']
     search_fields = ['name']
+
+
+@admin.register(models.Channels)
+class ChannelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'link']

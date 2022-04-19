@@ -6,8 +6,9 @@ from mptt.utils import tree_item_iterator
 from rest_framework.views import APIView
 
 from ticket.permissions import IsOwner
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes , renderer_classes
 
+from .permissions import post_permission_checker
 from .serializers import CategorySerializer, SingleCategorySerializer, PostsListSerializer, CommentCreateSerializer, \
     TagSerializer, PostsRetrieveSerializer
 from .models import Category, Post, Comment, Tag
@@ -15,42 +16,56 @@ from accounts.renderers import Renderer, SimpleRenderer
 # Rest Framework imports
 from rest_framework import generics
 from rest_framework.generics import get_object_or_404, CreateAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.status import HTTP_201_CREATED, HTTP_403_FORBIDDEN, HTTP_200_OK, HTTP_400_BAD_REQUEST, \
-    HTTP_204_NO_CONTENT
+    HTTP_204_NO_CONTENT , HTTP_404_NOT_FOUND
 from rest_framework.response import Response
 
 
 class CategoryListAPIView(generics.ListAPIView):
     serializer_class = CategorySerializer
     renderer_classes = [Renderer]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super(CategoryListAPIView, self).get_serializer_context()
+        context.update({'user': self.request.user})
+        return context
 
     def get_queryset(self):
-        return Category.objects.viewable()
+        checker = post_permission_checker(self.request.user, ['مادران قابله'])
+        categories = Category.objects.viewable() if checker else Category.objects.viewable().exclude(name__icontains='مادران')
+        return categories
 
 
-class CategoryTreeRetrieveAPIView(generics.RetrieveAPIView):
+class CategoryTreeRetrieveAPIView(generics.ListAPIView):
     serializer_class = CategorySerializer
     renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
 
+    def get_serializer_context(self):
+        context = super(CategoryTreeRetrieveAPIView, self).get_serializer_context()
+        context.update({'user': self.request.user})
+        return context
+
     def get_queryset(self):
-        categories = Category.objects.viewable()
-        filtered_categories = categories.filter(id=self.kwargs['id'])
-        return filtered_categories
+        checker = post_permission_checker(self.request.user, ['مادران قابله'])
+        categories = Category.objects.viewable().filter(id=self.kwargs['pk'])
+        categories = categories if checker else categories.exclude(name__icontains='مادران')
+        return categories
 
 
-class CategoryRetrieveAPIView(generics.RetrieveAPIView):
+class CategoryRetrieveAPIView(generics.ListAPIView):
     serializer_class = SingleCategorySerializer
     renderer_classes = [Renderer]
     permission_classes = [AllowAny]
     queryset = Category.objects.all()
 
     def get_queryset(self):
-        categories = Category.objects.viewable()
-        filtered_categories = categories.filter(id=self.kwargs['id'])
-        return filtered_categories
+        checker = post_permission_checker(self.request.user, ['مادران قابله'])
+        categories = Category.objects.filter(id=self.kwargs['pk'])
+        categories = categories if checker else categories.exclude(name__icontains='مادران')
+        return categories
 
 
 class PostsListView(generics.ListAPIView):
@@ -67,13 +82,21 @@ class PostsListView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.kwargs['id']
+        checker = post_permission_checker(self.request.user, ['مادران قابله'])
+        posts = Post.objects.all() if checker else Post.objects.all().exclude(categories__name__icontains='مادران')
         if param == 'all':
-            return Post.objects.filter(status='1')
+            return posts.filter(status='1')
         if param == 'liked':
-            return Post.objects.filter(likes__in=[self.request.user], status='1')
+            return posts.filter(likes__in=[self.request.user], status='1')
         if param == 'favorite':
-            return Post.objects.filter(favorite__in=[self.request.user])
-        return Post.objects.filter(categories__in=[self.kwargs['id']], status='1')
+            return posts.filter(favorite__in=[self.request.user])
+        if param == 'special':
+            return posts.filter(special_post=True)
+        if param == 'tv':
+            return posts.filter(ehya_tv=True)
+        if param == 'radio':
+            return posts.filter(radio_ehya=True)
+        return posts.filter(categories__in=[self.kwargs['id']], status='1')
 
 
 class PostsSearchView(generics.ListAPIView):
@@ -83,10 +106,14 @@ class PostsSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         param = self.request.query_params.get('q')
-        return Post.objects.search(param)
+        search_q = Post.objects.search(param)
+        user = self.request.user
+        if post_permission_checker(user, ['مادران قابله']):
+            return search_q
+        return search_q.exclude(categories__name__icontains='مادران')
 
 
-class PostRetrieveAPIView(generics.RetrieveAPIView):
+class PostRetrieveAPIView(generics.GenericAPIView):
     serializer_class = PostsRetrieveSerializer
     renderer_classes = [Renderer]
     permission_classes = [IsAuthenticated]
@@ -97,8 +124,17 @@ class PostRetrieveAPIView(generics.RetrieveAPIView):
         context.update({'user': self.request.user})
         return context
 
-    def get_object(self):
-        return get_object_or_404(Post, id=self.kwargs['pk'], status='1')
+    def get(self,request,*args,**kwargs):
+        checker = post_permission_checker(self.request.user, ['مادران قابله'])
+        post = get_object_or_404(Post, id=self.kwargs['pk'], status='1')
+        if checker:
+            return Response(self.serializer_class(post).data,status=HTTP_200_OK)
+
+        post = Post.objects.filter(id=self.kwargs['pk'], status='1').exclude(categories__name__icontains='مادران')
+        if post.exists():
+            return Response(self.serializer_class(post.first()).data,status=HTTP_200_OK)
+        return Response([],status=HTTP_200_OK)
+
 
 
 class CreateCommentAPIView(generics.GenericAPIView):
@@ -200,3 +236,15 @@ class UserFavoritePostsAPIView(generics.ListAPIView):
 #         posts = user.searchhistory.posts.all()
 #         serializer = self.serializer_class(posts, many=True)
 #         return Response(serializer.data, status=HTTP_200_OK)
+
+
+@api_view(['POST'])
+@renderer_classes([Renderer])
+@permission_classes([IsAdminUser])
+def special_post_indicator(request, id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=id)
+        post.special_post = False if post.special_post else True
+        post.save()
+        data = PostsListSerializer(post).data
+        return Response(data, status=HTTP_200_OK)

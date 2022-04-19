@@ -38,6 +38,11 @@ def answer_upload_location(instance, filename):
     return f'uploads/tickets/ticket{ticket_id}_answer{answer_id}.{extension}'
 
 
+def channel_icon_upload_location(instance, filename):
+    extension = filename.split('.')[-1]
+    return f'uploads/tickets/ticket{filename}.{extension}'
+
+
 # class TicketAnswerLimit(models.Model):
 #     value = models.PositiveIntegerField(_('مقدار'), default=3, help_text=_(
 #         'مقدار وارد شده تعیین میکند که کاربر حداکثر تا چند پاسخ در بدنه پرسش خود میتواند مطرح کند.'))
@@ -110,3 +115,23 @@ class Answer(models.Model):
 #     class Meta:
 #         verbose_name = _('هزینه پرسش')
 #         verbose_name_plural = _('هزینه پرسش')
+
+class Channels(models.Model):
+    title = models.CharField(_('عنوان'), max_length=50, null=False, blank=False)
+    icon = models.ImageField(_('آیکون'), upload_to=channel_icon_upload_location, null=True, blank=True)
+    description = models.TextField(_('توضیحات'), null=False, blank=False)
+    link = models.CharField(_('لینک'), max_length=255, null=False, blank=False)
+    back_ground_colour_1 = models.CharField(_('رنگ بک گراند 1'), max_length=50, null=True, blank=True)
+    back_ground_colour_2 = models.CharField(_('رنگ بک گراند 2'), max_length=50, null=True, blank=True)
+
+    class Meta:
+        verbose_name = _('گروه و کانال')
+        verbose_name_plural = _('گروه ها و کانال ها')
+        ordering = ('title',)
+
+
+
+    def __str__(self):
+        return self.title
+
+

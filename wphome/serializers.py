@@ -3,6 +3,7 @@ from rest_framework import serializers
 from jalali_date import datetime2jalali
 
 from .models import Post, Tag, Category, Comment
+from .permissions import post_permission_checker
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -21,6 +22,9 @@ class RecursiveField(serializers.Serializer):
 
 class CategoryRecursiveField(serializers.Serializer):
     def to_representation(self, value):
+        print(value.id)
+        print(self.context)
+        print(self.context.get('request'))
         serializer = self.parent.parent.__class__(value, context=self.context)
         return serializer.data
 
@@ -54,19 +58,23 @@ class CommentCreateSerializer(serializers.ModelSerializer):
                                          related_post=self.validated_data['related_post'])
         return comment
 
-
 class CategorySerializer(serializers.ModelSerializer):
-    children = CategoryRecursiveField(many=True)
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ('id', 'name', 'icon', 'code_1', 'code_2', 'children')
+        fields = ('id', 'name', 'icon', 'code_1', 'code_2', 'text_color', 'children')
+
+    def get_children(self, obj):
+        checker = post_permission_checker(self.context.get('user'), ['مادران قابله'])
+        children = obj.children.all() if checker else obj.children.all().exclude(name__icontains='مادران')
+        return CategorySerializer(children,many=True,context=self.context).data
 
 
 class SingleCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name', 'icon', 'code_1', 'code_2')
+        fields = ('id', 'name', 'icon', 'code_1', 'code_2', 'text_color')
 
 
 class PostsRetrieveSerializer(serializers.ModelSerializer):

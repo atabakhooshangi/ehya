@@ -224,7 +224,6 @@ CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -252,6 +251,21 @@ LOGGING = {
             'propagate': True,
         },
     },
+}
+TINYMCE_DEFAULT_CONFIG = {
+    "theme": "silver",
+    "height": 500,
+    "menubar": False,
+    "plugins": "advlist,autolink,lists,link,image,charmap,print,preview,anchor,"
+               "searchreplace,visualblocks,code,fullscreen,insertdatetime,media,table,paste,"
+               "code,help,wordcount",
+    "toolbar": "undo redo | formatselect | "
+               "bold italic backcolor | alignleft aligncenter "
+               "alignright alignjustify | bullist numlist outdent indent | "
+               "removeformat | help",
+    'paste_as_text': True,
+    'forced_root_block': False,
+    'statusbar': False
 }
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 9015165
