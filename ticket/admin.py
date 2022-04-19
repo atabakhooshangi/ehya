@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.template.defaultfilters import truncatechars
+
 from accounts.models import User
 from ehyasalamat.permission_check import role_permission_checker
 from . import models
@@ -232,4 +234,31 @@ class SectionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Channels)
 class ChannelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'link']
+    def change_button(self, obj):
+        return format_html(
+            '<a class="button" href="/admin/ticket/channels/{}/change/">ویرایش</a>',
+            obj.id)
+
+    def delete_button(self, obj):
+        return format_html(
+            '<a class="button" style="background-color:red;" href="/admin/ticket/channels/{}/delete/">حذف</a>',
+            obj.id)
+
+    def icon_preview(self, obj):
+        return obj.icon_preview
+
+
+
+    def truncated_short_desc(self, obj):
+        return truncatechars(obj.description, 55)
+
+    icon_preview.short_description = _('پیش نمایش')
+    truncated_short_desc.short_description = _('توضیحات')
+    change_button.short_description = _('ویرایش')
+    delete_button.short_description = _('حذف')
+    readonly_fields = ['icon_preview', 'id']
+    list_display = ['change_button', 'title', 'truncated_short_desc', 'link', 'delete_button']
+    fieldsets = [
+        (' ', {
+            'fields': (
+                'id', 'title', 'icon', 'icon_preview', 'description', "link", "back_ground_colour_1", "back_ground_colour_2",)}), ]

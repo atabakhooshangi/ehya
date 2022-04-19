@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 USER_STATUS_CHOICES = (
@@ -129,9 +130,11 @@ class Channels(models.Model):
         verbose_name_plural = _('گروه ها و کانال ها')
         ordering = ('title',)
 
-
-
     def __str__(self):
         return self.title
 
-
+    @property
+    def icon_preview(self):
+        if self.icon:
+            return mark_safe('<img src="{}" width="200" height="120" />'.format(self.icon.url))
+        return "موردی یافت نشد"
