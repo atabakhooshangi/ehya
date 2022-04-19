@@ -62,6 +62,10 @@ class PostAdmin(admin.ModelAdmin):
     def truncated_short_desc(self, obj):
         return truncatechars(obj.short_description, 75)
 
+    def truncated_desc(self, obj):
+        return truncatechars(obj.description, 75)
+
+    truncated_desc.short_description = _('متن مطلب')
     def categories_name(self, obj):
         cat_list = []
         categories = obj.categories.all()
@@ -79,7 +83,7 @@ class PostAdmin(admin.ModelAdmin):
 
     audio_preview.short_description = 'پیش نمایش صوت'
 
-    list_display = ['change_button', 'title', 'description','truncated_short_desc', 'categories_name', 'status', 'delete_button']
+    list_display = ['change_button', 'title', 'truncated_desc','truncated_short_desc', 'categories_name', 'status', 'delete_button']
     filter_horizontal = ['tags', 'likes', 'views', 'favorite', 'categories']
     search_fields = ['title', 'categories__name', 'tags__name']
     list_filter = [PostCategoryFilter, InformsInfTypeSerializer]
