@@ -40,8 +40,7 @@ def answer_upload_location(instance, filename):
 
 
 def channel_icon_upload_location(instance, filename):
-    extension = filename.split('.')[-1]
-    return f'uploads/tickets/ticket{filename}.{extension}'
+    return f'uploads/channels_groups_icon/{filename}'
 
 
 # class TicketAnswerLimit(models.Model):

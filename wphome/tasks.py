@@ -1,8 +1,7 @@
 import datetime
 from celery import shared_task
 from django.conf import settings
-
-from push_notification.main import PushThread
+from push_notification.main import PushNotification
 from .models import Post, upload_thumbnail_location
 
 
@@ -17,9 +16,9 @@ def check_posts_to_publish():
             if post.send_push:
                 photo_url = upload_thumbnail_location(post, str(post.push_notif_thumbnail))
                 url = 'http://' + '87.107.172.122' + settings.MEDIA_URL + photo_url
-                PushThread(section='home', title=post.title, body=post.push_notif_description,
-                           push_type='all',
-                           image=str(url)).start()
+                notif_instance = PushNotification(section='home', title=post.title, body=post.push_notif_description,
+                                                  push_type='all', image=str(url))
+                notif_instance.send()
             post.save()
 
         return
