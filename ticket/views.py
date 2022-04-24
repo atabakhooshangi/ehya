@@ -209,12 +209,14 @@ def ticket_count_api(request):
 
 
 class ListChannelsAPIView(generics.ListAPIView):
+    renderer_classes = [Renderer]
     serializer_class = ChannelSerializer
     permission_classes = [IsAuthenticated]
     queryset = Channels.objects.all()
 
 
 class RetrieveChannelsAPIView(generics.RetrieveAPIView):
+    renderer_classes = [Renderer]
     serializer_class = ChannelSerializer
     permission_classes = [IsAuthenticated]
     queryset = Channels.objects.all()
