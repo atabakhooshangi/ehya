@@ -228,11 +228,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logging/logs.log',
-        },
+
         'error_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
@@ -240,11 +236,6 @@ LOGGING = {
         }
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
         'ehya': {
             'handlers': ['error_file'],
             'level': 'ERROR',
