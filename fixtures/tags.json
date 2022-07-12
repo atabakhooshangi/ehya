@@ -1,0 +1,16 @@
+[
+  {
+    "model": "wphome.tag",
+    "pk": 1,
+    "fields": {
+      "name": "کورونا"
+    }
+  },
+  {
+    "model": "wphome.tag",
+    "pk": 2,
+    "fields": {
+      "name": "بخور جوش شیرین"
+    }
+  }
+]

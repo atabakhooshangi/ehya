@@ -1,0 +1,12 @@
+[
+  {
+    "model": "push_notification.pushnotificationsections",
+    "pk": 1,
+    "fields": {
+      "home": true,
+      "inform": true,
+      "support": true,
+      "ticket": true
+    }
+  }
+]

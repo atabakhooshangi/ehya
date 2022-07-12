@@ -1,0 +1,23 @@
+[
+  {
+    "model": "informs.classification",
+    "pk": 1,
+    "fields": {
+      "name": "مهم"
+    }
+  },
+  {
+    "model": "informs.classification",
+    "pk": 2,
+    "fields": {
+      "name": "عادی"
+    }
+  },
+  {
+    "model": "informs.classification",
+    "pk": 3,
+    "fields": {
+      "name": "بسیار مهم"
+    }
+  }
+]

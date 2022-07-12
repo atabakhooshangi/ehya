@@ -1,0 +1,62 @@
+[
+  {
+    "model": "support.supportsection",
+    "pk": 1,
+    "fields": {
+      "name": "اپلیکیشن",
+      "active": true,
+      "associated_roles": [
+        17,
+        18
+      ]
+    }
+  },
+  {
+    "model": "support.supportsection",
+    "pk": 2,
+    "fields": {
+      "name": "آموزش",
+      "active": true,
+      "associated_roles": [
+        21,
+        22
+      ]
+    }
+  },
+  {
+    "model": "support.supportsection",
+    "pk": 3,
+    "fields": {
+      "name": "سایت",
+      "active": true,
+      "associated_roles": [
+        16,
+        15
+      ]
+    }
+  },
+  {
+    "model": "support.supportsection",
+    "pk": 4,
+    "fields": {
+      "name": "عمومی",
+      "active": true,
+      "associated_roles": [
+        20,
+        19
+      ]
+    }
+  },
+  {
+    "model": "support.supportsection",
+    "pk": 5,
+    "fields": {
+      "name": "مطب",
+      "active": true,
+      "associated_roles": [
+        14,
+        13
+      ]
+    }
+  }
+]

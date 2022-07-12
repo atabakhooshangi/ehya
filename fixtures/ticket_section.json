@@ -1,0 +1,30 @@
+[
+  {
+    "model": "ticket.section",
+    "pk": 1,
+    "fields": {
+      "name": "اطفال"
+    }
+  },
+  {
+    "model": "ticket.section",
+    "pk": 2,
+    "fields": {
+      "name": "بیماری های تنفسی"
+    }
+  },
+  {
+    "model": "ticket.section",
+    "pk": 3,
+    "fields": {
+      "name": "بیماری های قلبی"
+    }
+  },
+  {
+    "model": "ticket.section",
+    "pk": 4,
+    "fields": {
+      "name": "زنان"
+    }
+  }
+]

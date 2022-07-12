@@ -1,0 +1,50 @@
+[
+  {
+    "model": "wphome.category",
+    "pk": 1,
+    "fields": {
+      "name": "مقالات",
+      "icon": "uploads/category_icons/9.png",
+      "code_1": "0xff00ffed",
+      "code_2": "0xff00b8ba",
+      "text_color": null,
+      "parent": null,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 2,
+      "level": 0
+    }
+  },
+  {
+    "model": "wphome.category",
+    "pk": 2,
+    "fields": {
+      "name": "ویژه کرونا",
+      "icon": "uploads/category_icons/4.png",
+      "code_1": "0xff00ffed",
+      "code_2": "0xff00b8ba",
+      "text_color": null,
+      "parent": null,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 3,
+      "level": 0
+    }
+  },
+  {
+    "model": "wphome.category",
+    "pk": 3,
+    "fields": {
+      "name": "مادران قابله",
+      "icon": "uploads/category_icons/3.png",
+      "code_1": "0xffFF5733",
+      "code_2": "0xff6CFF00",
+      "text_color": null,
+      "parent": null,
+      "lft": 1,
+      "rght": 2,
+      "tree_id": 1,
+      "level": 0
+    }
+  }
+]

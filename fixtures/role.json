@@ -1,0 +1,209 @@
+[
+  {
+    "model": "accounts.role",
+    "pk": 1,
+    "fields": {
+      "name": "عضو عادی",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 2,
+    "fields": {
+      "name": "عضو فعال",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 3,
+    "fields": {
+      "name": "کارشناس",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 4,
+    "fields": {
+      "name": "کارشناس ارشد",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 5,
+    "fields": {
+      "name": "مدیر",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 6,
+    "fields": {
+      "name": "مدیر ارشد",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 7,
+    "fields": {
+      "name": "دانشجو",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 8,
+    "fields": {
+      "name": "استاد",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 9,
+    "fields": {
+      "name": "حکیم",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 10,
+    "fields": {
+      "name": "عضو جامعه",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 11,
+    "fields": {
+      "name": "شورای مرکزی",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 12,
+    "fields": {
+      "name": "مدیر کل",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 13,
+    "fields": {
+      "name": "مدیر مطب",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 14,
+    "fields": {
+      "name": "مدیر ارشد مطب",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 15,
+    "fields": {
+      "name": "مدیر سایت",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 16,
+    "fields": {
+      "name": "مدیر ارشد سایت",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 17,
+    "fields": {
+      "name": "مدیر اپلیکیشن",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 18,
+    "fields": {
+      "name": "مدیر ارشد اپلیکیشن",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 19,
+    "fields": {
+      "name": "مدیر روابط عمومی",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 20,
+    "fields": {
+      "name": "مدیر ارشد روابط عمومی",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 21,
+    "fields": {
+      "name": "مدیر آموزش",
+      "is_expert": false,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 22,
+    "fields": {
+      "name": "مدیر ارشد آموزش",
+      "is_expert": true,
+      "permissions": []
+    }
+  },
+  {
+    "model": "accounts.role",
+    "pk": 23,
+    "fields": {
+      "name": "مادران قابله",
+      "is_expert": false,
+      "permissions": []
+    }
+  }
+]
