@@ -62,10 +62,6 @@ class PostAdmin(admin.ModelAdmin):
     def truncated_short_desc(self, obj):
         return truncatechars(obj.short_description, 75)
 
-    def truncated_desc(self, obj):
-        return truncatechars(obj.description, 75)
-
-    truncated_desc.short_description = _('متن مطلب')
     def categories_name(self, obj):
         cat_list = []
         categories = obj.categories.all()
@@ -83,18 +79,18 @@ class PostAdmin(admin.ModelAdmin):
 
     audio_preview.short_description = 'پیش نمایش صوت'
 
-    list_display = ['change_button', 'title', 'truncated_desc','truncated_short_desc', 'categories_name', 'status', 'delete_button']
+    list_display = ['change_button', 'title', 'truncated_short_desc', 'categories_name', 'status', 'delete_button']
     filter_horizontal = ['tags', 'likes', 'views', 'favorite', 'categories']
     search_fields = ['title', 'categories__name', 'tags__name']
     list_filter = [PostCategoryFilter, InformsInfTypeSerializer]
     inlines = [CommentInLine]
     readonly_fields = (
         'thumbnail_preview', 'get_likes_count', 'get_views_count', 'get_favorite_count', 'date_created',
-        'audio_preview','id')
+        'audio_preview')
     fieldsets = [
         ('وارد کردن عناوین و متون پست', {
             'fields': (
-                'id','title', 'categories', "short_description", "description", "share_link",)}),
+                'title', 'categories', "short_description", "description", "share_link",)}),
         ('تصویر پست', {
             'fields': (
                 'image', 'thumbnail_preview',)}),
@@ -120,7 +116,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': ('favorite', 'get_favorite_count',)
         }),
         ('وضعیت و زمان انتشار', {
-            'fields': ('status', 'date_to_publish', 'date_created','special_post')
+            'fields': ('status', 'date_to_publish', 'date_created')
         }),
     ]
 
@@ -177,7 +173,7 @@ class PostAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         photo_url = upload_thumbnail_location(obj, str(obj.push_notif_thumbnail))
         url = 'http://' + get_current_site(request).domain + settings.MEDIA_URL + photo_url
-        if obj.send_push and obj.status != '5':
+        if obj.send_push:
             PushThread(section='home', title=obj.title, body=obj.push_notif_description,
                        push_type='all',
                        image=str(url)).start()
@@ -197,15 +193,6 @@ class CategoryAdmin(MPTTModelAdmin):
             '<a class="button" style="background-color:red;" href="/admin/wphome/category/{}/delete/">حذف</a>',
             obj.id)
 
-    def icon_preview(self, obj):
-        return obj.icon_preview
-
-    readonly_fields = ['icon_preview','id']
-    icon_preview.short_description = 'پیش نمایش'
-    fieldsets = [
-        (' ', {
-            'fields': (
-                'id','name', 'icon', 'icon_preview', "code_1", "code_2", "text_color", "parent",)}), ]
     change_button.short_description = _('ویرایش')
     delete_button.short_description = _('حذف')
     list_display = ['change_button', 'name', 'parent', 'delete_button']

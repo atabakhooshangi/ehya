@@ -1,7 +1,2 @@
 celery -A ehyasalamat worker --pool=gevent --loglevel=DEBUG
 python manage.py dumpdata --indent 4 app.model(e.g auth.user) > whatever.json
-
-
-$ sudo supervisorctl stop mailcelery
-$ sudo supervisorctl start mailcelery
-$ sudo supervisorctl status mailcelery

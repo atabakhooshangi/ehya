@@ -167,18 +167,18 @@ def support_ticket_count_api(request):
             closed = SupportTicket.objects.filter(status_for_support='3').count()
             user_answer = SupportTicket.objects.filter(status_for_support='4').count()
             data = {
-                'new': new,
-                'answered': answered,
-                'closed': closed,
-                'user_answer': user_answer,
+                'جدید': new,
+                'پاسخ داده شده': answered,
+                'بسته شده': closed,
+                'پاسخ کاربر': user_answer,
             }
             return Response(data, status=HTTP_200_OK)
         in_progress = SupportTicket.objects.filter(user=request.user, status_for_user='1').count()
         answered = SupportTicket.objects.filter(user=request.user, status_for_user='2').count()
         closed = SupportTicket.objects.filter(user=request.user, status_for_user='3').count()
         data = {
-            'in_progress': in_progress,
-            'answered': answered,
-            'closed': closed
+            'در حال بررسی': in_progress,
+            'پاسخ داده شده': answered,
+            'بسته شده': closed
         }
         return Response(data, status=HTTP_200_OK)

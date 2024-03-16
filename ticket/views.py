@@ -3,8 +3,8 @@ import datetime
 
 from ehyasalamat.permission_check import ticket_permission_checker
 from push_notification.main import PushThread
-from .models import Ticket, Section, Channels
-from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer, ChannelSerializer
+from .models import Ticket, Section
+from .serializers import TicketGetSerializer, AnswerSerializer, TicketCreateSerializer, SectionSerializer
 from .permissions import IsExpertOrIsOwner
 from accounts.renderers import Renderer, SimpleRenderer
 from .utils import not_reached_answer_limit
@@ -185,38 +185,24 @@ def ticket_count_api(request):
     if request.method == 'GET':
         if ticket_permission_checker(user=request.user, role_list=['کارشناس', 'کارشناس ارشد']):
             new = Ticket.objects.filter(status_for_expert='1').count()
-            referenced = Ticket.objects.filter(status_for_expert='2').count()
+            refrenced = Ticket.objects.filter(status_for_expert='2').count()
             answered = Ticket.objects.filter(status_for_expert='3').count()
             closed = Ticket.objects.filter(status_for_expert='4').count()
             user_answer = Ticket.objects.filter(status_for_expert='5').count()
             data = {
-                'new': new,
-                'referenced_to_expert': referenced,
-                'answered': answered,
-                'closed': closed,
-                'user_answer': user_answer,
+                'جدید': new,
+                'ارجاء به کارشناس ارشد': refrenced,
+                'پاسخ داده شده': answered,
+                'بسته شده': closed,
+                'پاسخ کاربر': user_answer,
             }
             return Response(data, status=HTTP_200_OK)
         in_progress = Ticket.objects.filter(user=request.user, status_for_user='1').count()
         answered = Ticket.objects.filter(user=request.user, status_for_user='2').count()
         closed = Ticket.objects.filter(user=request.user, status_for_user='3').count()
         data = {
-            'in_progress': in_progress,
-            'answered': answered,
-            'closed': closed
+            'در حال بررسی': in_progress,
+            'پاسخ داده شده': answered,
+            'بسته شده': closed
         }
         return Response(data, status=HTTP_200_OK)
-
-
-class ListChannelsAPIView(generics.ListAPIView):
-    renderer_classes = [Renderer]
-    serializer_class = ChannelSerializer
-    permission_classes = [IsAuthenticated]
-    queryset = Channels.objects.all()
-
-
-class RetrieveChannelsAPIView(generics.RetrieveAPIView):
-    renderer_classes = [Renderer]
-    serializer_class = ChannelSerializer
-    permission_classes = [IsAuthenticated]
-    queryset = Channels.objects.all()

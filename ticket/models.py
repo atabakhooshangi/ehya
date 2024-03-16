@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 USER_STATUS_CHOICES = (
@@ -37,10 +36,6 @@ def answer_upload_location(instance, filename):
     ticket_id = instance.ticket.id
     answer_id = Ticket.objects.last().id + 1
     return f'uploads/tickets/ticket{ticket_id}_answer{answer_id}.{extension}'
-
-
-def channel_icon_upload_location(instance, filename):
-    return f'uploads/channels_groups_icon/{filename}'
 
 
 # class TicketAnswerLimit(models.Model):
@@ -115,25 +110,3 @@ class Answer(models.Model):
 #     class Meta:
 #         verbose_name = _('هزینه پرسش')
 #         verbose_name_plural = _('هزینه پرسش')
-
-class Channels(models.Model):
-    title = models.CharField(_('عنوان'), max_length=50, null=False, blank=False)
-    icon = models.ImageField(_('آیکون'), upload_to=channel_icon_upload_location, null=True, blank=True)
-    description = models.TextField(_('توضیحات'), null=False, blank=False)
-    link = models.CharField(_('لینک'), max_length=255, null=False, blank=False)
-    back_ground_colour_1 = models.CharField(_('رنگ بک گراند 1'), max_length=50, null=True, blank=True)
-    back_ground_colour_2 = models.CharField(_('رنگ بک گراند 2'), max_length=50, null=True, blank=True)
-
-    class Meta:
-        verbose_name = _('گروه و کانال')
-        verbose_name_plural = _('گروه ها و کانال ها')
-        ordering = ('title',)
-
-    def __str__(self):
-        return self.title
-
-    @property
-    def icon_preview(self):
-        if self.icon:
-            return mark_safe('<img src="{}" width="200" height="120" />'.format(self.icon.url))
-        return "موردی یافت نشد"

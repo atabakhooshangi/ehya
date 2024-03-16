@@ -82,11 +82,7 @@ class UserProfileAPIView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
-        data = serializer.data
-        # for i in data:
-        #     if data[i] is None:
-        #         data[i] = ""
-        return Response(data)
+        return Response(serializer.data)
 
     def patch(self, request, *args, **kwargs):
         serializer = self.serializer_class(self.get_object(), data=request.data, partial=True)
